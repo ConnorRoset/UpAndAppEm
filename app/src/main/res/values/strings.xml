@@ -6,4 +6,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="my_exercises">My Exercises</string>
+    <string name="messages">Messages</string>
+    <string name="exercise_catalog">Exercise Catalog</string>
 </resources>
