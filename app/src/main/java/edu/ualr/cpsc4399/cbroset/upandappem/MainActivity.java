@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseCatalog.ExerciseCatalog;
 import edu.ualr.cpsc4399.cbroset.upandappem.Messages.Messages;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +46,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+       //make the header clickable. Just place holder for now.
+        View header = navigationView.getHeaderView(0);
+        ImageView myImage = (ImageView) header.findViewById(R.id.imageView);
+        myImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    getPatientInfo();
+            }
+        });
     }
 
     @Override
@@ -106,5 +120,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void getPatientInfo(){
+        //if patient logged in, pull their info
+        Toast.makeText(getApplicationContext(), "Image clicked",
+                Toast.LENGTH_LONG).show();
+        //Otherwise, prompt them to log in with a dialog
     }
 }
