@@ -1,9 +1,7 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseCatalog.ExerciseCatalog;
+import edu.ualr.cpsc4399.cbroset.upandappem.Messages.Messages;
+import edu.ualr.cpsc4399.cbroset.upandappem.MyExercises.MyExercises;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,14 +81,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (id == R.id.nav_myExercises) {
-            // Handle the camera action
-        } else if (id == R.id.nav_messages){
-
+            MyExercises fragment = new MyExercises();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+        } else if (id == R.id.nav_messages) {
+            Messages fragment = new Messages();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
         } else if (id == R.id.nav_exercise_catalog) {
-
+            ExerciseCatalog fragment = new ExerciseCatalog();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
         }
+
+        fragmentTransaction.commit();
 // else if (id == R.id.nav_manage) {
 //
 //        }

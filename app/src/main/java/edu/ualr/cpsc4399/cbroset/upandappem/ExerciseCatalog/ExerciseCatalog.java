@@ -1,4 +1,4 @@
-package edu.ualr.cpsc4399.cbroset.upandappem;
+package edu.ualr.cpsc4399.cbroset.upandappem.ExerciseCatalog;
 
 
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import edu.ualr.cpsc4399.cbroset.upandappem.R;
 
 
 /**
