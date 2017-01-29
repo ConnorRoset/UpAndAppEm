@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
+import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.dummy.DummyContent;
 
 import java.util.List;
@@ -47,14 +49,14 @@ public class ExerciseListActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         View recyclerView = findViewById(R.id.exercise_list);
         assert recyclerView != null;
@@ -86,11 +88,15 @@ public class ExerciseListActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             //add a new settings detail here to login and what not
-            Intent intent = new Intent(this, ExerciseListActivity.class);
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
-
+        else if(id == R.id.action_message){
+            //build a messaging activity here
+            startActivity(new Intent(this, MessagesActivity.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -111,6 +117,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.exercise_list_content, parent, false);
+            //this will get changed to the card layout file
             return new ViewHolder(view);
         }
 
