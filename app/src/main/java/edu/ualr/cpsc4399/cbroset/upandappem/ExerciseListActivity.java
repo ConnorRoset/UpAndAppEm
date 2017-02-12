@@ -2,26 +2,33 @@ package edu.ualr.cpsc4399.cbroset.upandappem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.Exercise;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
-import edu.ualr.cpsc4399.cbroset.upandappem.dummy.DummyContent;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * An activity representing a list of Exercises. This activity
@@ -38,30 +45,53 @@ public class ExerciseListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private ExerciseRegimen exerciseRegimen;
 
+    private void openExerciseRegimen(){
+        Gson gson = new Gson();
+        String json = getPreferences(MODE_PRIVATE).getString("EXERCISE_REGIMEN_SAVE","");
+        exerciseRegimen = gson.fromJson(json, ExerciseRegimen.class);
+
+        //if the TNDlist extracted was null, build a new one
+        if(exerciseRegimen == null){
+
+            //using the default to load up sample exercises
+            exerciseRegimen= new ExerciseRegimen(45, true);
+        }
+        //exerciseRegimen= new ExerciseRegimen(45, true);
+    }
+
+    private void saveExerciseRegimen(){
+        SharedPreferences.Editor prefsEditor = getPreferences(MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(exerciseRegimen);
+        prefsEditor.putString("EXERCISE_REGIMEN_SAVE", json);
+        prefsEditor.apply();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        openExerciseRegimen();
+        //exerciseRegimen= new ExerciseRegimen(45, true);
+        //exerciseRegimen = new ExerciseRegimen(45, true);
+        //exerciseRegimen.addExercise(new Exercise("Jumping Jacks", Calendar.getInstance(), 5, 50));
+        saveExerciseRegimen();
+
         setContentView(R.layout.activity_exercise_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-        View recyclerView = findViewById(R.id.exercise_list);
+        //Toast.makeText(getApplicationContext(), exerciseRegimen.getExerciseAtIndex(1).getTitle(), Toast.LENGTH_LONG).show();
+        //set up the recyclerview
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        //recyclerView.setLayoutParams(new LinearLayoutManager(get));
+        setupRecyclerView(recyclerView);
 
+        //check for tablet layout
         if (findViewById(R.id.exercise_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -101,47 +131,61 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimen.getExercises()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public class ExerciseRegimenRecyclerViewAdapter
+            extends RecyclerView.Adapter<ExerciseRegimenRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final ArrayList<Exercise> mExercises;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
+        public ExerciseRegimenRecyclerViewAdapter(ArrayList<Exercise> items) {
+            this.mExercises = items;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.exercise_list_content, parent, false);
+           CardView view = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_card_card_layout, parent, false);
             //this will get changed to the card layout file
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+           // holder.mExercise = exerciseRegimen.getExercises().get(position);
+            holder.mExercise = mExercises.get(position);
 
-            holder.mView.setOnClickListener(new View.OnClickListener() {
+            holder.title.setText(holder.mExercise.getTitle());
+
+
+
+            holder.date.setText(holder.mExercise.getDate().getTime().toString());
+            holder.mReps.setText(String.valueOf(holder.mExercise.getReps()));
+            holder.mSets.setText(String.valueOf(holder.mExercise.getSets()));
+
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Bundle exerciseInfo = new Bundle();
+                    exerciseInfo.putString("TITLE", holder.mExercise.getTitle());
+                    exerciseInfo.putString("DATE", holder.mExercise.getDate().getTime().toString());
+                    exerciseInfo.putInt("REPS", holder.mExercise.getReps());
+                    exerciseInfo.putInt("SETS", holder.mExercise.getSets());
+
                     if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        //Bundle arguments = new Bundle();
+                        //arguments.putString(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                         ExerciseDetailFragment fragment = new ExerciseDetailFragment();
-                        fragment.setArguments(arguments);
+                        fragment.setArguments(exerciseInfo);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.exercise_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ExerciseDetailActivity.class);
-                        intent.putExtra(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+
+                        intent.putExtras(exerciseInfo);
 
                         context.startActivity(intent);
                     }
@@ -151,26 +195,27 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mExercises.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public final CardView cardView;
+            public final TextView title;
+            public final TextView date;
+            public Exercise mExercise;
+            public TextView mReps;
+            public TextView mSets;
 
-            public ViewHolder(View view) {
+            public ViewHolder(CardView view) {
                 super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                cardView = (CardView) view.findViewById(R.id.exercise_card_view);
+                title = (TextView) view.findViewById(R.id.exercise_card_title);
+                date = (TextView) view.findViewById(R.id.exercise_card_date);
+                mReps = (TextView) view.findViewById(R.id.exercise_card_reps);
+                mSets = (TextView) view.findViewById(R.id.exercise_card_sets);
             }
 
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
+
         }
     }
 }
