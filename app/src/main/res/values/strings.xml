@@ -14,4 +14,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
         <string name="title_exercise_list">Exercises</string>
     <string name="title_exercise_detail">Exercise Detail</string>
+    <string name="email">Email:</string>
 </resources>

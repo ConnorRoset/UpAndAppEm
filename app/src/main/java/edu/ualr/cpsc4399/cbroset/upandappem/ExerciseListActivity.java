@@ -1,5 +1,6 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,57 +48,69 @@ public class ExerciseListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     private ExerciseRegimen exerciseRegimen;
 
-    private void openExerciseRegimen(){
-        Gson gson = new Gson();
-        String json = getPreferences(MODE_PRIVATE).getString("EXERCISE_REGIMEN_SAVE","");
-        exerciseRegimen = gson.fromJson(json, ExerciseRegimen.class);
+    //starting other activity codes:
+    public static final int SETTINGS_ACTIVITY_RESULT = 0;
 
-        //if the TNDlist extracted was null, build a new one
-        if(exerciseRegimen == null){
+    //sharedprefs information:
+    public static final String MY_PREFS = "MyPrefs";
+    public static final String NAME = "name";
+    public static final String EMAIL = "email";
+    public static final String USER_ID = "user_id";
+    public static final String USER_NAME = "UserName";
+    public static final String LOGGED_IN = "loggedIn";
+    SharedPreferences sharedPreferences;
 
-            //using the default to load up sample exercises
-            exerciseRegimen= new ExerciseRegimen(45, true);
-        }
-        //exerciseRegimen= new ExerciseRegimen(45, true);
-    }
+    //fields on screen
+    TextView introText;
+    RecyclerView recyclerView;
 
-    private void saveExerciseRegimen(){
-        SharedPreferences.Editor prefsEditor = getPreferences(MODE_PRIVATE).edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(exerciseRegimen);
-        prefsEditor.putString("EXERCISE_REGIMEN_SAVE", json);
-        prefsEditor.apply();
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        openExerciseRegimen();
-        //exerciseRegimen= new ExerciseRegimen(45, true);
-        //exerciseRegimen = new ExerciseRegimen(45, true);
-        //exerciseRegimen.addExercise(new Exercise("Jumping Jacks", Calendar.getInstance(), 5, 50));
-        saveExerciseRegimen();
 
         setContentView(R.layout.activity_exercise_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
-        //Toast.makeText(getApplicationContext(), exerciseRegimen.getExerciseAtIndex(1).getTitle(), Toast.LENGTH_LONG).show();
-        //set up the recyclerview
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
+        introText = (TextView) findViewById(R.id.activity_exercise_list_todays_workout);
+        recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
         assert recyclerView != null;
         //recyclerView.setLayoutParams(new LinearLayoutManager(get));
-        setupRecyclerView(recyclerView);
+        //setupRecyclerView(recyclerView);
+        sharedPreferences = getSharedPreferences(MY_PREFS, MODE_PRIVATE);
 
-        //check for tablet layout
+
+        //set up the shared preferences to get everything started
+
+        //set up the recyclerview
+
+
         if (findViewById(R.id.exercise_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //check to see if the recyler view is good!
+        if (sharedPreferences.getBoolean(LOGGED_IN, false)) {
+            String intro = "Workout for: " + sharedPreferences.getString(NAME, "default name");
+            introText.setText(intro);
+
+            assert recyclerView != null;
+            //setupRecyclerView(recyclerView);
+
+        } else {
+            //put up a message saying to login
+            Toast.makeText(this, "Log in via the settings on the top right", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -121,8 +134,7 @@ public class ExerciseListActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
-        }
-        else if(id == R.id.action_message){
+        } else if (id == R.id.action_message) {
             //build a messaging activity here
             startActivity(new Intent(this, MessagesActivity.class));
             return true;
@@ -131,7 +143,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimen.getExercises()));
+        //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimen.getExercises()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
@@ -146,32 +158,29 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-           CardView view = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_card_card_layout, parent, false);
+            CardView view = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_card_card_layout, parent, false);
             //this will get changed to the card layout file
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
-           // holder.mExercise = exerciseRegimen.getExercises().get(position);
+            // holder.mExercise = exerciseRegimen.getExercises().get(position);
             holder.mExercise = mExercises.get(position);
 
-            holder.title.setText(holder.mExercise.getTitle());
-
-
-
-            holder.date.setText(holder.mExercise.getDate().getTime().toString());
-            holder.mReps.setText(String.valueOf(holder.mExercise.getReps()));
-            holder.mSets.setText(String.valueOf(holder.mExercise.getSets()));
+//            holder.title.setText(holder.mExercise.getTitle());
+//            holder.date.setText(holder.mExercise.getDueDate().getTime().toString());
+//            holder.mReps.setText(String.valueOf(holder.mExercise.getReps()));
+//            holder.mSets.setText(String.valueOf(holder.mExercise.getSets()));
 
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle exerciseInfo = new Bundle();
-                    exerciseInfo.putString("TITLE", holder.mExercise.getTitle());
-                    exerciseInfo.putString("DATE", holder.mExercise.getDate().getTime().toString());
-                    exerciseInfo.putInt("REPS", holder.mExercise.getReps());
-                    exerciseInfo.putInt("SETS", holder.mExercise.getSets());
+//                    exerciseInfo.putString("TITLE", holder.mExercise.getTitle());
+//                    exerciseInfo.putString("DATE", holder.mExercise.getDueDate().getTime().toString());
+//                    exerciseInfo.putInt("REPS", holder.mExercise.getReps());
+//                    exerciseInfo.putInt("SETS", holder.mExercise.getSets());
 
                     if (mTwoPane) {
                         //Bundle arguments = new Bundle();
@@ -184,9 +193,7 @@ public class ExerciseListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ExerciseDetailActivity.class);
-
                         intent.putExtras(exerciseInfo);
-
                         context.startActivity(intent);
                     }
                 }

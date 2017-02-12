@@ -8,69 +8,37 @@ import java.util.Calendar;
  */
 public class Exercise {
 
-    public enum QUALITY {POOR, FAIR, GOOD, EXCELLENT}
+    private int exercise_id;
+    private String exercise_name, instructions;
 
-    private int reps, sets;
-    private String title;
-    private Calendar date;
-    private QUALITY quality;
-    private boolean compelete;
+    public Exercise(int exercise_id, String exercise_name, String instructions){
+        this.exercise_id = exercise_id;
+        this.exercise_name = exercise_name;
+        this.instructions = instructions;
 
-    public int getReps() {
-        return reps;
     }
 
-    public void setReps(int reps) {
-        this.reps = reps;
+    public String getInstructions() {
+        return instructions;
     }
 
-    public int getSets() {
-        return sets;
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
     }
 
-    public void setSets(int sets) {
-        this.sets = sets;
+    public int getExercise_id() {
+        return exercise_id;
     }
 
-    public String getTitle() {
-        return title;
+    public void setExercise_id(int exercise_id) {
+        this.exercise_id = exercise_id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getExercise_name() {
+        return exercise_name;
     }
 
-    public Calendar getDate() {
-        return date;
+    public void setExercise_name(String exercise_name) {
+        this.exercise_name = exercise_name;
     }
-
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
-    public QUALITY getQuality() {
-        return quality;
-    }
-
-    public void setQuality(QUALITY quality) {
-        this.quality = quality;
-    }
-
-
-    public boolean isCompelete() {
-        return compelete;
-    }
-
-    public void setCompelete(boolean compelete) {
-        this.compelete = compelete;
-    }
-
-    public Exercise(String title, Calendar date, int sets, int reps) {
-        this.title = title;
-        this.date = date;
-        this.sets = sets;
-        this.reps = reps;
-    }
-
-
 }

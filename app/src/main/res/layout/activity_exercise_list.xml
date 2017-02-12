@@ -22,22 +22,19 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <TextView
 
+            android:layout_width="match_parent"
+            android:text="Today's Workout:"
+            android:id="@+id/activity_exercise_list_todays_workout"
+            android:layout_height="wrap_content" />
         <include layout="@layout/exercise_list" />
     </FrameLayout>
-
-    <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="bottom|end"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--app:srcCompat="@android:drawable/ic_dialog_email" />-->
-
 
 </android.support.design.widget.CoordinatorLayout>

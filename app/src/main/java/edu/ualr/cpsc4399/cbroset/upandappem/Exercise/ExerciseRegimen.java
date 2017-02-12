@@ -9,52 +9,97 @@ import java.util.Calendar;
  */
 
 public class ExerciseRegimen {
-    public ArrayList<Exercise> getExercises() {
-        return exercises;
+
+    public enum QUALITY {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN}
+
+    private int exercise_id, exercise_reps, exercise_set, patient_id, regimen_id, therapist_id;
+    private QUALITY quality;
+    private boolean complete;
+    private Calendar dueDate, timeUpdated;
+
+    public ExerciseRegimen(int exercise_id, int exercise_reps, int exercise_set ){
+
     }
 
-    private ArrayList<Exercise> exercises;
-   private int patientID;
 
-    public ExerciseRegimen(int patientID) {
-        this.patientID = patientID;
-        getExerciseRegimenFromDatabase(patientID);
-    }
-    public ExerciseRegimen(int patientID, boolean testing) {
-        this.patientID = patientID;
-        getExerciseRegimenFromDatabase(patientID);
-        setUpSampleExercises();
+    //All the getters and setters
+    public int getExercise_id() {
+        return exercise_id;
     }
 
-    public void addExercise(Exercise exercise) {
-        exercises.add(exercise);
+    public void setExercise_id(int exercise_id) {
+        this.exercise_id = exercise_id;
     }
 
-    public void removeExercise(Exercise exercise) {
-        if (exercises.contains(exercise)) {
-            exercises.remove(exercise);
-        }
-    }
-    public Exercise getExerciseAtIndex(int i){
-        return exercises.get(i);
-    }
-    private void getExerciseRegimenFromDatabase(int patientID) {
-        exercises = new ArrayList<>();
-       // exercises = new ArrayList<>();
-        //find patient id on database
-        //for each entry on database, add that exercise to the exercise regimen
+    public int getExercise_reps() {
+        return exercise_reps;
     }
 
-    private void setUpSampleExercises(){
-        //exercises = new ArrayList<>();
-        Calendar myCal= Calendar.getInstance();
-        myCal.set(2017, Calendar.FEBRUARY, 18);
+    public void setExercise_reps(int exercise_reps) {
+        this.exercise_reps = exercise_reps;
+    }
 
-        Exercise exercise1 = new Exercise("Pushups", myCal, 3, 15);
-        exercises.add(exercise1);
-        Exercise exercise2  = new Exercise("Crunches", myCal, 4,10);
-        exercises.add(exercise2);
-        Exercise exercise3 = new Exercise("Squats", myCal, 2, 30);
-        exercises.add(exercise3);
+    public int getExercise_set() {
+        return exercise_set;
+    }
+
+    public void setExercise_set(int exercise_set) {
+        this.exercise_set = exercise_set;
+    }
+
+    public int getPatient_id() {
+        return patient_id;
+    }
+
+    public void setPatient_id(int patient_id) {
+        this.patient_id = patient_id;
+    }
+
+    public int getRegimen_id() {
+        return regimen_id;
+    }
+
+    public void setRegimen_id(int regimen_id) {
+        this.regimen_id = regimen_id;
+    }
+
+    public int getTherapist_id() {
+        return therapist_id;
+    }
+
+    public void setTherapist_id(int therapist_id) {
+        this.therapist_id = therapist_id;
+    }
+
+    public QUALITY getQuality() {
+        return quality;
+    }
+
+    public void setQuality(QUALITY quality) {
+        this.quality = quality;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+    public Calendar getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Calendar dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Calendar getTimeUpdated() {
+        return timeUpdated;
+    }
+
+    public void setTimeUpdated(Calendar timeUpdated) {
+        this.timeUpdated = timeUpdated;
     }
 }

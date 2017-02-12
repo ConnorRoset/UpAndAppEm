@@ -61,7 +61,7 @@ public class ExerciseDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mExercise != null) {
-            ((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
+            //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
         }
 
         return rootView;
