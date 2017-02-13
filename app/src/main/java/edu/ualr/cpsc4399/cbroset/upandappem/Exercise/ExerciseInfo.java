@@ -6,12 +6,12 @@ import java.util.Calendar;
 /**
  * Created by connorroset on 1/27/17.
  */
-public class Exercise {
+public class ExerciseInfo {
 
     private int exercise_id;
     private String exercise_name, instructions;
 
-    public Exercise(int exercise_id, String exercise_name, String instructions){
+    public ExerciseInfo(int exercise_id, String exercise_name, String instructions){
         this.exercise_id = exercise_id;
         this.exercise_name = exercise_name;
         this.instructions = instructions;

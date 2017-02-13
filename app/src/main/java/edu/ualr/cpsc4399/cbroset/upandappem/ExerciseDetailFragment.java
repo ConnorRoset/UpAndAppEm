@@ -6,10 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toolbar;
 
-import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.Exercise;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 
 /**
  * A fragment representing a single Exercise detail screen.
@@ -27,7 +25,7 @@ public class ExerciseDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private Exercise mExercise;
+    private ExerciseInfo mExerciseInfo;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,7 +58,7 @@ public class ExerciseDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.exercise_detail, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mExercise != null) {
+        if (mExerciseInfo != null) {
             //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
         }
 

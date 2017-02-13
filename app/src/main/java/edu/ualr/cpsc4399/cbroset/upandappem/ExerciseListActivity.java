@@ -1,6 +1,5 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,16 +19,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
-import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.Exercise;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * An activity representing a list of Exercises. This activity
@@ -46,7 +41,7 @@ public class ExerciseListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private ExerciseRegimen exerciseRegimen;
+    private ArrayList<ExerciseRegimen> exerciseRegimens;
 
     //starting other activity codes:
     public static final int SETTINGS_ACTIVITY_RESULT = 0;
@@ -61,58 +56,105 @@ public class ExerciseListActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
 
     //fields on screen
-    TextView introText;
+    TextView noWorkouts;
     RecyclerView recyclerView;
+    boolean isLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_exercise_list);
 
+        //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-        introText = (TextView) findViewById(R.id.activity_exercise_list_todays_workout);
-        recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
-        assert recyclerView != null;
-        //recyclerView.setLayoutParams(new LinearLayoutManager(get));
-        //setupRecyclerView(recyclerView);
+
+        //shared preferences loading
         sharedPreferences = getSharedPreferences(MY_PREFS, MODE_PRIVATE);
 
+        //little snippet for the user
+//        introText = (TextView) findViewById(R.id.activity_exercise_list_todays_workout);
+//
 
-        //set up the shared preferences to get everything started
+        //Noworkouts catch:
+        noWorkouts = (TextView) findViewById(R.id.activity_exercise_list_no_workouts);
+        // noWorkouts.setVisibility(View.INVISIBLE);
 
-        //set up the recyclerview
+        //recyclerview
+        recyclerView = (RecyclerView) findViewById(R.id.exercise_list_recyclerView);
+        assert recyclerView != null;
 
+        //Build up the list of exercise regimens, it should be unpopulated at this point
+        exerciseRegimens = new ArrayList<>();
 
+        //check if user is logged in, else try to populate the list
+        isLoggedIn = sharedPreferences.getBoolean(LOGGED_IN, false);
+
+        if (!isLoggedIn) {
+            Toast.makeText(this, "Log in via the settings on the top right", Toast.LENGTH_SHORT).show();
+        } else {
+            //Special program to try to populate the recyclerview
+            tryExerciseStartup();
+        }
+
+        //check for tablet layout
         if (findViewById(R.id.exercise_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        //check to see if the recyler view is good!
-        if (sharedPreferences.getBoolean(LOGGED_IN, false)) {
-            String intro = "Workout for: " + sharedPreferences.getString(NAME, "default name");
-            introText.setText(intro);
+    public void getWorkouts() {
+        //Here is where all the information regarding the workout fetching from the database will be
+    }
+    private void tryExerciseStartup(){
+        try {
+            //attempt to populate the exerciseRegimens with the getWorkouts function,
+            getWorkouts();
 
-            assert recyclerView != null;
-            //setupRecyclerView(recyclerView);
+        } catch (UnknownError e) {
+            Toast.makeText(this, "Connection to database failed", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
 
+        if (!exerciseRegimens.isEmpty()) {
+            noWorkouts.setVisibility(View.INVISIBLE);
+            setupRecyclerView(recyclerView);
         } else {
-            //put up a message saying to login
-            Toast.makeText(this, "Log in via the settings on the top right", Toast.LENGTH_SHORT).show();
+
+            //introText.setVisibility(View.INVISIBLE);
+            noWorkouts.setVisibility(View.VISIBLE);
 
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        //check to see if the recycler view is good!
+        if (!exerciseRegimens.isEmpty()) {
+            noWorkouts.setVisibility(View.INVISIBLE);
+            recyclerView.getAdapter().notifyDataSetChanged();
+        } else {
+            noWorkouts.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SETTINGS_ACTIVITY_RESULT) {
+            if (resultCode == RESULT_OK) {
+                //check for successful login, then setup recyclerview if necessary
+                if(sharedPreferences.contains(LOGGED_IN)){
+                    Toast.makeText(getApplicationContext(), "logged in", Toast.LENGTH_SHORT).show();
+                    tryExerciseStartup();
+                } else{
+                    Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,7 +174,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             //add a new settings detail here to login and what not
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, SETTINGS_ACTIVITY_RESULT);
             return true;
         } else if (id == R.id.action_message) {
             //build a messaging activity here
@@ -143,17 +185,17 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimen.getExercises()));
+        recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
     public class ExerciseRegimenRecyclerViewAdapter
             extends RecyclerView.Adapter<ExerciseRegimenRecyclerViewAdapter.ViewHolder> {
 
-        private final ArrayList<Exercise> mExercises;
+        private final ArrayList<ExerciseRegimen> mExerciseRegimens;
 
-        public ExerciseRegimenRecyclerViewAdapter(ArrayList<Exercise> items) {
-            this.mExercises = items;
+        public ExerciseRegimenRecyclerViewAdapter(ArrayList<ExerciseRegimen> items) {
+            this.mExerciseRegimens = items;
         }
 
         @Override
@@ -166,7 +208,6 @@ public class ExerciseListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
             // holder.mExercise = exerciseRegimen.getExercises().get(position);
-            holder.mExercise = mExercises.get(position);
 
 //            holder.title.setText(holder.mExercise.getTitle());
 //            holder.date.setText(holder.mExercise.getDueDate().getTime().toString());
@@ -202,14 +243,13 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mExercises.size();
+            return mExerciseRegimens.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final CardView cardView;
             public final TextView title;
             public final TextView date;
-            public Exercise mExercise;
             public TextView mReps;
             public TextView mSets;
 

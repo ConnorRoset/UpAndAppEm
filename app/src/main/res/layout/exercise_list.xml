@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/exercise_list"
-    android:name="edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListActivity"
-    tools:listitem="@layout/exercise_list_content" />
+    android:orientation="vertical"
+    android:name="edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListFragment">
+    <!--<TextView-->
+
+        <!--android:layout_width="match_parent"-->
+        <!--android:text="Today's Workout:"-->
+        <!--android:id="@+id/activity_exercise_list_todays_workout"-->
+        <!--android:layout_height="wrap_content" />-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No workouts Today!"
+        android:id="@+id/activity_exercise_list_no_workouts"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/exercise_list_recyclerView"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListActivity"
+        tools:listitem="@layout/exercise_list_content" />
+
+</LinearLayout>

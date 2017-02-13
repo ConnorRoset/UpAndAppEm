@@ -13,14 +13,22 @@ public class ExerciseRegimen {
     public enum QUALITY {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN}
 
     private int exercise_id, exercise_reps, exercise_set, patient_id, regimen_id, therapist_id;
-    private QUALITY quality;
+    private QUALITY exercise_quality;
     private boolean complete;
-    private Calendar dueDate, timeUpdated;
+    private Calendar due_date, time_updated;
 
-    public ExerciseRegimen(int exercise_id, int exercise_reps, int exercise_set ){
-
+    public ExerciseRegimen(int exercise_id, int exercise_reps, int exercise_set, int patient_id, int regimen_id, int therapist_id, QUALITY exercise_quality, boolean complete, Calendar due_date, Calendar time_updated) {
+        this.exercise_id = exercise_id;
+        this.exercise_reps = exercise_reps;
+        this.exercise_set = exercise_set;
+        this.patient_id = patient_id;
+        this.regimen_id = regimen_id;
+        this.therapist_id = therapist_id;
+        this.exercise_quality = exercise_quality;
+        this.complete = complete;
+        this.due_date = due_date;
+        this.time_updated = time_updated;
     }
-
 
     //All the getters and setters
     public int getExercise_id() {
@@ -71,12 +79,12 @@ public class ExerciseRegimen {
         this.therapist_id = therapist_id;
     }
 
-    public QUALITY getQuality() {
-        return quality;
+    public QUALITY getExercise_quality() {
+        return exercise_quality;
     }
 
-    public void setQuality(QUALITY quality) {
-        this.quality = quality;
+    public void setExercise_quality(QUALITY quality) {
+        this.exercise_quality = quality;
     }
 
     public boolean isComplete() {
@@ -87,19 +95,19 @@ public class ExerciseRegimen {
         this.complete = complete;
     }
 
-    public Calendar getDueDate() {
-        return dueDate;
+    public Calendar getDue_date() {
+        return due_date;
     }
 
-    public void setDueDate(Calendar dueDate) {
-        this.dueDate = dueDate;
+    public void setDue_date(Calendar due_date) {
+        this.due_date = due_date;
     }
 
-    public Calendar getTimeUpdated() {
-        return timeUpdated;
+    public Calendar getTime_updated() {
+        return time_updated;
     }
 
-    public void setTimeUpdated(Calendar timeUpdated) {
-        this.timeUpdated = timeUpdated;
+    public void setTime_updated(Calendar time_updated) {
+        this.time_updated = time_updated;
     }
 }

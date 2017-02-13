@@ -3,6 +3,7 @@ package edu.ualr.cpsc4399.cbroset.upandappem.Settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.Exercise;
+
 import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.R;
 
@@ -61,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
                         editor.putString(ExerciseListActivity.USER_NAME, username);
                         editor.putBoolean(ExerciseListActivity.LOGGED_IN, true);
                         editor.apply();
-
+                        setResult(RESULT_OK);
                         finish();
                     }
                 }
@@ -69,12 +70,29 @@ public class SettingsActivity extends AppCompatActivity {
         } else {
             submit.setEnabled(false);
             //Toast.makeText(getApplicationContext(), "You are already logged in", Toast.LENGTH_SHORT).show();
+            nameET.setText(sharedPreferences.getString(ExerciseListActivity.NAME, ""));
+            nameET.setEnabled(false);
+            nameET.setTextColor(Color.BLACK);
+
+            emailET.setText(sharedPreferences.getString(ExerciseListActivity.EMAIL, ""));
+            emailET.setEnabled(false);
+            emailET.setTextColor(Color.BLACK);
+
+            userIDET.setText(sharedPreferences.getString(ExerciseListActivity.USER_ID, ""));
+            userIDET.setEnabled(false);
+            userIDET.setTextColor(Color.BLACK);
+
+            usernameET.setText(sharedPreferences.getString(ExerciseListActivity.USER_NAME, ""));
+            usernameET.setEnabled(false);
+            usernameET.setTextColor(Color.BLACK);
+
             logout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     editor = sharedPreferences.edit();
                     editor.clear();
                     editor.apply();
+                    setResult(RESULT_OK);
                     finish();
 
                 }
