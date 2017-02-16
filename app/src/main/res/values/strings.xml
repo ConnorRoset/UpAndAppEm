@@ -15,4 +15,5 @@
         <string name="title_exercise_list">Exercises</string>
     <string name="title_exercise_detail">Exercise Detail</string>
     <string name="email">Email:</string>
+    <string name="refresh">Refresh</string>
 </resources>

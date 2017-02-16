@@ -11,4 +11,11 @@
         android:orderInCategory="100"
         android:title="@string/messages"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_refresh"
+        android:orderInCategory="100"
+
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom"
+        />
 </menu>
