@@ -48,7 +48,7 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     //variables throughout the app
     private List<ExerciseRegimen> exerciseRegimens;
-    private static final String ROOT_URL = "127.0.0.1:5000";
+    private static final String ROOT_URL = "http://10.0.2.2:5000";
     //starting other activity codes:
     public static final int SETTINGS_ACTIVITY_RESULT = 0;
 
@@ -118,8 +118,10 @@ public class ExerciseListActivity extends AppCompatActivity {
             //  getWorkoutsFromDatabase();
             String url = ROOT_URL + "/exercise_regimen/" + sharedPreferences.getString(USER_ID, "");
             //Toast.makeText(getApplicationContext(), url, Toast.LENGTH_SHORT).show();
-            DownloadExerciseRegimens der = new DownloadExerciseRegimens(this);
-            der.execute(url);
+            //DownloadExerciseRegimens der =
+            new DownloadExerciseRegimens(this).execute(url);
+            //der.execute(url);
+
 
 
         } catch (UnknownError e) {
@@ -130,6 +132,9 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     public void setExerciseRegimens(List<ExerciseRegimen> exerciseRegimens) {
+        if(exerciseRegimens.isEmpty()){
+            Toast.makeText(this, "Empty from download", Toast.LENGTH_SHORT).show();
+        }
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
 
@@ -194,9 +199,9 @@ public class ExerciseListActivity extends AppCompatActivity {
     public void refreshScreen() {
         //refresh the recyclerview with the notifydatachanged
         recyclerView.getAdapter().notifyDataSetChanged();
-        if(exerciseRegimens.isEmpty()){
-            Toast.makeText(getApplicationContext(), "Oops", Toast.LENGTH_SHORT).show();
-        }
+//        if(exerciseRegimens.isEmpty()){
+//            Toast.makeText(getApplicationContext(), "Oops", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     //recyclerview setup information

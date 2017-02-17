@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.provider.CalendarContract;
 import android.text.format.DateFormat;
 import android.util.JsonReader;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,39 +30,23 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
     private List<ExerciseRegimen> exerciseRegimens = new ArrayList<ExerciseRegimen>();
     private ExerciseListActivity activity;
-
+    String url1 = "";
     public DownloadExerciseRegimens(ExerciseListActivity activity) {
         this.activity = activity;
     }
 
+    @Override
+    protected void onPreExecute() {
+        Toast.makeText(activity.getApplicationContext(), "Starting", Toast.LENGTH_SHORT).show();
+    }
 
     protected List<ExerciseRegimen> doInBackground(String... url) {
-//        int exercise_id, exercise_reps, exercise_set, patient_id, regimen_id, therapist_id;
-//        ExerciseRegimen.QUALITY exercise_quality;
-//        boolean complete;
-//        Calendar due_date, time_updated;
-//
-//        //initialize the variables
-//        exercise_id = 1;
-//        exercise_reps = 3;
-//        exercise_set = 2;
-//        patient_id = 2;
-//        regimen_id = 1;
-//        therapist_id = 1;
-//        exercise_quality = ExerciseRegimen.QUALITY.ONE;
-//        complete = false;
-//        due_date = Calendar.getInstance();
-//        time_updated = Calendar.getInstance();
-//
-//        //build the exercise regimen
-//        ExerciseRegimen exerciseRegimen = new ExerciseRegimen(exercise_id, exercise_reps, exercise_set, patient_id, regimen_id, therapist_id, exercise_quality, complete, due_date, time_updated);
 
-        //add the exercise to the regimens
-        //exerciseRegimens.add(exerciseRegimen);
-        try{
-            InputStream input = new URL(url[0]).openStream();
-            exerciseRegimens.addAll(readJsonStream(input));
-        } catch (Exception e){
+        try {
+            url1 = url[0];
+            InputStream input = new URL(url1).openStream();
+            exerciseRegimens = readJsonStream(input);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return exerciseRegimens;
@@ -72,29 +57,34 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
         //callback from main activity to set up the exercise regimens
         activity.setExerciseRegimens(exerciseRegimens);
-        //delegate.processFinished(exerciseRegimens);
+        Toast.makeText(activity.getApplicationContext(), url1, Toast.LENGTH_SHORT).show();
+
     }
 
-    public List<ExerciseRegimen> readJsonStream(InputStream in) throws IOException{
+
+    public List<ExerciseRegimen> readJsonStream(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-        try{
+        try {
             return readExerciseRegimenArray(reader);
         } finally {
             reader.close();
         }
     }
 
-    public List<ExerciseRegimen> readExerciseRegimenArray(JsonReader reader) throws IOException {
-        List<ExerciseRegimen> exerciseRegimens = new ArrayList<>();
+    public List readExerciseRegimenArray(JsonReader reader) throws IOException {
+        List exerciseRegimens = new ArrayList();
+
         reader.beginObject();
         String result = reader.nextName();
-        if (result.equals("regimen_info")) {
-            reader.beginArray();
-            while (reader.hasNext()) {
-                exerciseRegimens.add(readExerciseRegimen(reader));
-            }
-            reader.endArray();
+        reader.beginArray();
+
+
+        while (reader.hasNext()) {
+            exerciseRegimens.add(readExerciseRegimen(reader));
         }
+
+
+        reader.endArray();
         return exerciseRegimens;
     }
 
@@ -141,7 +131,7 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             } else if (name.equals("time_updated")) {
 
                 //don't actually do anything with it
-                reader.skipValue();
+                //reader.skipValue();
                 time_updated = Calendar.getInstance();
             } else {
                 reader.skipValue();
