@@ -132,9 +132,9 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     public void setExerciseRegimens(List<ExerciseRegimen> exerciseRegimens) {
-        if(exerciseRegimens.isEmpty()){
-            Toast.makeText(this, "Empty from download", Toast.LENGTH_SHORT).show();
-        }
+//        if(exerciseRegimens.isEmpty()){
+//            Toast.makeText(this, "Empty from download", Toast.LENGTH_SHORT).show();
+//        }
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
 

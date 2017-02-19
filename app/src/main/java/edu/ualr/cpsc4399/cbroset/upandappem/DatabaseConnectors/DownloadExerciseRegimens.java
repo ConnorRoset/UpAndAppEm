@@ -6,10 +6,23 @@ import android.text.format.DateFormat;
 import android.util.JsonReader;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
+import org.json.JSONObject;
+import org.json.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,32 +37,112 @@ import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListActivity;
 /**
  * Created by connorroset on 2/13/17.
  */
-
 public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<ExerciseRegimen>> {
-
+    public static final String COMPLETE = "complete";
+    public static final String DUE_DATE = "due_date";
+    public static final String EXERCISE_ID = "exercise_id";
+    public static final String EXERCISE_QUALITY = "exercise_quality";
+    public static final String EXERCISE_REPS = "exercise_reps";
+    public static final String EXERCISE_SET = "exercise_set";
+    public static final String PATIENT_ID = "patient_id";
+    public static final String REGIMEN_ID = "regimen_id";
+    public static final String THERAPIST_ID = "therapist_id";
+    public static final String TIME_UPDATED = "time_updated";
 
     private List<ExerciseRegimen> exerciseRegimens = new ArrayList<ExerciseRegimen>();
     private ExerciseListActivity activity;
-    String url1 = "";
+    URL url1;
+    String response = "";
+    URLConnection urlconn = null;
+    BufferedReader bufferedReader = null;
+
     public DownloadExerciseRegimens(ExerciseListActivity activity) {
         this.activity = activity;
     }
 
     @Override
     protected void onPreExecute() {
-        Toast.makeText(activity.getApplicationContext(), "Starting", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity.getApplicationContext(), "Starting", Toast.LENGTH_SHORT).show();
     }
 
     protected List<ExerciseRegimen> doInBackground(String... url) {
+        response = url[0];
 
         try {
-            url1 = url[0];
-            InputStream input = new URL(url1).openStream();
-            exerciseRegimens = readJsonStream(input);
-        } catch (Exception e) {
+            url1 = new URL(url[0]);
+            urlconn = url1.openConnection();
+            bufferedReader = new BufferedReader(new InputStreamReader(urlconn.getInputStream()));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            //response = stringBuilder.toString();
+            //weird structure, so grab the first array
+            JSONArray exerciseRegimenArray = new JSONArray(stringBuilder.toString());
+
+            //then grab the second array, it happens to be at index 1
+            JSONArray sub = exerciseRegimenArray.getJSONArray(1);
+            for (int i = 0; i < sub.length(); i++) {
+                JSONObject obj = sub.getJSONObject(i);
+                exerciseRegimens.add(getExerciseRegimenFromJSON(obj));
+            }
+
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return exerciseRegimens;
+    }
+
+    private ExerciseRegimen getExerciseRegimenFromJSON(JSONObject obj) {
+        ExerciseRegimen er = null;
+        boolean complete;
+        Calendar dueDate = Calendar.getInstance(), timeUpdated = Calendar.getInstance();
+        int eID, reps, set, pID, rID, tID;
+        ExerciseRegimen.QUALITY quality;
+        try {
+            //complete
+            complete = obj.getBoolean(COMPLETE);
+
+            //due date
+            String tempDate = obj.getString(DUE_DATE);
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+                try {
+                    dueDate.setTime(sdf.parse(tempDate));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            //Exercise Id
+            eID = obj.getInt(EXERCISE_ID);
+
+            //EXERCISEQUALITY
+            quality = ExerciseRegimen.QUALITY.values()[obj.getInt(EXERCISE_QUALITY) -1];
+
+            //exercise reps
+            reps = obj.getInt(EXERCISE_REPS);
+
+            //exercise sets
+            set = obj.getInt(EXERCISE_SET);
+
+            //patient ID
+            pID = obj.getInt(PATIENT_ID);
+
+            //regimenID
+            rID = obj.getInt(REGIMEN_ID);
+
+            //therapist ID
+            tID = obj.getInt(THERAPIST_ID);
+
+            //don't update the time updated for now, it's okay
+            er = new ExerciseRegimen(eID,reps,set,pID,rID,tID,quality,complete,dueDate,timeUpdated);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return er;
     }
 
     @Override
@@ -57,89 +150,11 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
         //callback from main activity to set up the exercise regimens
         activity.setExerciseRegimens(exerciseRegimens);
-        Toast.makeText(activity.getApplicationContext(), url1, Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity.getApplicationContext(), response, Toast.LENGTH_LONG).show();
 
     }
 
 
-    public List<ExerciseRegimen> readJsonStream(InputStream in) throws IOException {
-        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-        try {
-            return readExerciseRegimenArray(reader);
-        } finally {
-            reader.close();
-        }
-    }
-
-    public List readExerciseRegimenArray(JsonReader reader) throws IOException {
-        List exerciseRegimens = new ArrayList();
-
-        reader.beginObject();
-        String result = reader.nextName();
-        reader.beginArray();
-
-
-        while (reader.hasNext()) {
-            exerciseRegimens.add(readExerciseRegimen(reader));
-        }
-
-
-        reader.endArray();
-        return exerciseRegimens;
-    }
-
-    public ExerciseRegimen readExerciseRegimen(JsonReader reader) throws IOException {
-        int exercise_id = 0, exercise_reps = 0, exercise_set = 0, patient_id = 0, regimen_id = 0, therapist_id = 0;
-        int exercise_quality = 0;
-        boolean complete = false;
-        Calendar due_date = Calendar.getInstance();
-        Calendar time_updated = Calendar.getInstance();
-        ExerciseRegimen.QUALITY quality;
-        quality = ExerciseRegimen.QUALITY.values()[(exercise_quality)];
-
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("complete")) {
-                complete = reader.nextBoolean();
-            } else if (name.equals("due_date")) {
-                String tempDate = reader.nextString();
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
-                //worry about this later, just use the getInstance Calendar for now
-
-//                try {
-//                    due_date.setTime(sdf.parse(tempDate));
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-            } else if (name.equals("exercise_id")) {
-                exercise_id = reader.nextInt();
-
-            } else if (name.equals("exercise_quality")) {
-                exercise_quality = reader.nextInt();
-                quality = ExerciseRegimen.QUALITY.values()[(exercise_quality)];
-            } else if (name.equals("exercise_reps")) {
-                exercise_reps = reader.nextInt();
-            } else if (name.equals("exercise_set")) {
-                exercise_set = reader.nextInt();
-            } else if (name.equals("patient_id")) {
-                patient_id = reader.nextInt();
-            } else if (name.equals("regimen_id")) {
-                regimen_id = reader.nextInt();
-            } else if (name.equals("therapist_id")) {
-                therapist_id = reader.nextInt();
-            } else if (name.equals("time_updated")) {
-
-                //don't actually do anything with it
-                //reader.skipValue();
-                time_updated = Calendar.getInstance();
-            } else {
-                reader.skipValue();
-            }
-        }
-        reader.endObject();
-        return new ExerciseRegimen(exercise_id, exercise_reps, exercise_set, patient_id, regimen_id, therapist_id, quality, complete, due_date, time_updated);
-    }
 
 
 }
