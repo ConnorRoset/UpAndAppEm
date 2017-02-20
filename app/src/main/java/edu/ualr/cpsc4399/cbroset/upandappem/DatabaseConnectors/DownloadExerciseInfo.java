@@ -42,6 +42,7 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
     @Override
     protected void onPreExecute(){
         //preexecution stagee
+        super.onPreExecute();
     }
 
     protected ExerciseInfo doInBackground(String... url){

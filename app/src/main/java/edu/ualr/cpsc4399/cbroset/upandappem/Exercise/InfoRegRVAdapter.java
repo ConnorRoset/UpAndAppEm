@@ -84,8 +84,8 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
             }
         });
         infoRegViewHolder.exercise.setText(String.valueOf(infoRegs.get(i).getExerciseInfo().getExercise_name()));
-        //String FormattedDate = android.text.format.DateFormat.getLongDateFormat(getApplicationContext()).format(exerciseRegimens.get(position).getDue_date().getTime());
-        infoRegViewHolder.date.setText(infoRegs.get(i).getExerciseRegimen().getDue_date().toString());
+        String formattedDate = android.text.format.DateFormat.getLongDateFormat(context.getApplicationContext()).format(infoRegs.get(i).getExerciseRegimen().getDue_date().getTime());
+        infoRegViewHolder.date.setText(formattedDate);
         infoRegViewHolder.reps.setText((String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_reps())));
         infoRegViewHolder.sets.setText((String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_set())));
     }
