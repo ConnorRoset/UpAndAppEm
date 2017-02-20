@@ -21,17 +21,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseRegimens;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoRegRVAdapter;
 import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
 
 /**
  * An activity representing a list of Exercises. This activity
@@ -44,10 +45,12 @@ import java.util.concurrent.ExecutionException;
 public class ExerciseListActivity extends AppCompatActivity {
 
 
-    private boolean mTwoPane; //for whether it is tablet or not
+    public boolean mTwoPane; //for whether it is tablet or not
 
     //variables throughout the app
+    private List<ExerciseInfo> exerciseInfos;
     private List<ExerciseRegimen> exerciseRegimens;
+    private List<InfoReg> infoRegs;
     private static final String ROOT_URL = "http://10.0.2.2:5000";
     //starting other activity codes:
     public static final int SETTINGS_ACTIVITY_RESULT = 0;
@@ -81,9 +84,10 @@ public class ExerciseListActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(MY_PREFS, MODE_PRIVATE);
 
 
-
         //Build up the list of exercise regimens, it should be unpopulated at this point
         exerciseRegimens = new ArrayList<>();
+        exerciseInfos = new ArrayList<>();
+        infoRegs = new ArrayList<>();
 
         //recyclerview
         recyclerView = (RecyclerView) findViewById(R.id.exercise_list_recyclerView);
@@ -93,11 +97,12 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         //check if user is logged in, else try to populate the list
         isLoggedIn = sharedPreferences.getBoolean(LOGGED_IN, false);
-       // Toast.makeText(this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
 
         if (isLoggedIn) {
-            //
-            getWorkoutsFromDatabase();
+            //both of these methods must be called before
+            getExerciseRegimensFromDatabase();
+            // getExerciseInfoFromDatabase();
             recyclerView.getAdapter().notifyDataSetChanged();
         } else {
 
@@ -111,17 +116,13 @@ public class ExerciseListActivity extends AppCompatActivity {
         }
     }
 
-    public void getWorkoutsFromDatabase() {
+    public void getExerciseRegimensFromDatabase() {
         //Here is where all the information regarding the workout fetching from the database will be
         try {
-            //attempt to populate the exerciseRegimens with the getWorkouts function,
-            //  getWorkoutsFromDatabase();
-            String url = ROOT_URL + "/exercise_regimen/" + sharedPreferences.getString(USER_ID, "");
-            //Toast.makeText(getApplicationContext(), url, Toast.LENGTH_SHORT).show();
-            //DownloadExerciseRegimens der =
-            new DownloadExerciseRegimens(this).execute(url);
-            //der.execute(url);
 
+            String url = ROOT_URL + "/exercise_regimen/" + sharedPreferences.getString(USER_ID, "");
+
+            new DownloadExerciseRegimens(this).execute(url);
 
 
         } catch (UnknownError e) {
@@ -131,12 +132,44 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     }
 
+    public void getExerciseInfoFromDatabase() {
+
+        for (ExerciseRegimen er : exerciseRegimens) {
+
+            try {
+
+                String url = ROOT_URL + "/exercise/" + er.getExercise_id();
+                //Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
+                //on the post execution step for each on, a call to addExerciseInfoToRegimen is
+                // made to build up the InfoRegs
+                new DownloadExerciseInfo(this).execute(url);
+
+
+            } catch (UnknownError e) {
+                Toast.makeText(this, "Connection to database failed", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+        //
+    }
+
     public void setExerciseRegimens(List<ExerciseRegimen> exerciseRegimens) {
-//        if(exerciseRegimens.isEmpty()){
-//            Toast.makeText(this, "Empty from download", Toast.LENGTH_SHORT).show();
-//        }
+
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
+
+    public void addExerciseInfoToRegimen(ExerciseInfo exerciseInfo) {
+        for(ExerciseRegimen er : exerciseRegimens){
+            if(er.getExercise_id() == exerciseInfo.getExercise_id()){
+                infoRegs.add(new InfoReg(er, exerciseInfo));
+            }
+        }
+        //after a change has happened, notify the recylerview to update
+        recyclerView.getAdapter().notifyDataSetChanged();
+        //this.exerciseInfos.add(exerciseInfo);
+    }
+
+
 
 
     @Override
@@ -152,7 +185,7 @@ public class ExerciseListActivity extends AppCompatActivity {
                 //check for successful login, then setup recyclerview if necessary
                 if (sharedPreferences.contains(LOGGED_IN)) {
                     Toast.makeText(getApplicationContext(), "logged in", Toast.LENGTH_SHORT).show();
-                    getWorkoutsFromDatabase();
+                    getExerciseRegimensFromDatabase();
 //                    setupRecyclerView(recyclerView);
                 } else {
                     Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT).show();
@@ -160,9 +193,10 @@ public class ExerciseListActivity extends AppCompatActivity {
 
 
                 }
-                recyclerView.getAdapter().notifyDataSetChanged();
+
             }
         }
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
 
@@ -206,7 +240,9 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     //recyclerview setup information
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
+        InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
+        //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 

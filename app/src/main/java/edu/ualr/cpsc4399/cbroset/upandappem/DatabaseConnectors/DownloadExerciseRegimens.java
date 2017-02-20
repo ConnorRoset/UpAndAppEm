@@ -1,16 +1,7 @@
 package edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors;
 
 import android.os.AsyncTask;
-import android.provider.CalendarContract;
-import android.text.format.DateFormat;
-import android.util.JsonReader;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 
 import org.json.JSONObject;
 import org.json.*;
@@ -150,7 +141,10 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
         //callback from main activity to set up the exercise regimens
         activity.setExerciseRegimens(exerciseRegimens);
-        Toast.makeText(activity.getApplicationContext(), response, Toast.LENGTH_LONG).show();
+
+        //only after that one has finished calling can we attempt to fetch the info for the exercises
+        activity.getExerciseInfoFromDatabase();
+        //Toast.makeText(activity.getApplicationContext(), response, Toast.LENGTH_LONG).show();
 
     }
 
