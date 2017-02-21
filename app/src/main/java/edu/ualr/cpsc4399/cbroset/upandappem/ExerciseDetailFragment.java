@@ -1,13 +1,16 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
 import android.app.Activity;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 
 /**
  * A fragment representing a single Exercise detail screen.
@@ -25,8 +28,8 @@ public class ExerciseDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private ExerciseInfo mExerciseInfo;
-
+    private InfoReg infoReg;
+    private Bundle bundle;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -37,19 +40,10 @@ public class ExerciseDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bundle = this.getArguments();
+        infoReg = (InfoReg) bundle.get("EXERCISE_INFO");
+        getActivity().setTitle(infoReg.getExerciseInfo().getExercise_name());
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-           // mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-//            Toolbar appBarLayout = (Toolbar) activity.findViewById(R.id.detail_toolbar);
-//            if (appBarLayout != null) {
-//                appBarLayout.setTitle(.content);
-//            }
-        }
     }
 
     @Override
@@ -58,9 +52,9 @@ public class ExerciseDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.exercise_detail, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mExerciseInfo != null) {
-            //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
-        }
+//        if (mExerciseInfo != null) {
+//            //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
+//        }
 
         return rootView;
     }

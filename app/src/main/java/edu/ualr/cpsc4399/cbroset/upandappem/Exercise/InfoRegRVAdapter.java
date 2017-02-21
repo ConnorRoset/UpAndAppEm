@@ -23,13 +23,14 @@ import edu.ualr.cpsc4399.cbroset.upandappem.R;
  * Created by connorroset on 2/19/17.
  */
 
-public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.InfoRegViewHolder>{
-    public static class InfoRegViewHolder extends RecyclerView.ViewHolder{
+public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.InfoRegViewHolder> {
+    public static class InfoRegViewHolder extends RecyclerView.ViewHolder {
         CardView cardview;
         TextView exercise;
         TextView date;
         TextView reps, sets;
-        InfoRegViewHolder(View itemView){
+
+        InfoRegViewHolder(View itemView) {
             super(itemView);
             cardview = (CardView) itemView.findViewById(R.id.exercise_card_view);
             exercise = (TextView) itemView.findViewById(R.id.exercise_card_title);
@@ -40,39 +41,43 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
     }
 
     private List<InfoReg> infoRegs;
-    private Intent intent;
+    //private Intent intent;
     private Context context;
-    public InfoRegRVAdapter(List<InfoReg> infoRegs, Context context){
+
+    public InfoRegRVAdapter(List<InfoReg> infoRegs, Context context) {
         this.infoRegs = infoRegs;
         this.context = context;
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return infoRegs.size();
     }
 
     @Override
-    public InfoRegViewHolder onCreateViewHolder(ViewGroup viewGroup, int i){
+    public InfoRegViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.exercise_card_card_layout, viewGroup, false);
 
-        return  new InfoRegViewHolder(v);
+        return new InfoRegViewHolder(v);
     }
+
     @Override
     public void onBindViewHolder(final InfoRegViewHolder infoRegViewHolder, final int i) {
+        final InfoReg mInfoReg = infoRegs.get(i);
+
         infoRegViewHolder.cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle exerciseInfo = new Bundle();
-
+                exerciseInfo.putParcelable("EXERCISE_INFO", mInfoReg);
                 if (((ExerciseListActivity) v.getContext()).mTwoPane) {
                     //Bundle arguments = new Bundle();
                     //arguments.putString(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                     ExerciseDetailFragment fragment = new ExerciseDetailFragment();
                     fragment.setArguments(exerciseInfo);
-                    //FragmentManager manager = (ExerciseListActivity);
 
-                            ((ExerciseListActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
+                    //start the fragment
+                    ((ExerciseListActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
                             .replace(R.id.exercise_detail_container, fragment)
                             .commit();
                 } else {
@@ -91,7 +96,7 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView){
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 }

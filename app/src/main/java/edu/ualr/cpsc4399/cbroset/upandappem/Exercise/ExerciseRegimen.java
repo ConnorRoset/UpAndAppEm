@@ -1,5 +1,8 @@
 package edu.ualr.cpsc4399.cbroset.upandappem.Exercise;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,7 +11,7 @@ import java.util.Calendar;
  * Created by connorroset on 1/27/17.
  */
 
-public class ExerciseRegimen {
+public class ExerciseRegimen implements Parcelable {
 
     public enum QUALITY {ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN}
 
@@ -110,4 +113,49 @@ public class ExerciseRegimen {
     public void setTime_updated(Calendar time_updated) {
         this.time_updated = time_updated;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.exercise_id);
+        dest.writeInt(this.exercise_reps);
+        dest.writeInt(this.exercise_set);
+        dest.writeInt(this.patient_id);
+        dest.writeInt(this.regimen_id);
+        dest.writeInt(this.therapist_id);
+        dest.writeInt(this.exercise_quality == null ? -1 : this.exercise_quality.ordinal());
+        dest.writeByte(this.complete ? (byte) 1 : (byte) 0);
+        dest.writeSerializable(this.due_date);
+        dest.writeSerializable(this.time_updated);
+    }
+
+    protected ExerciseRegimen(Parcel in) {
+        this.exercise_id = in.readInt();
+        this.exercise_reps = in.readInt();
+        this.exercise_set = in.readInt();
+        this.patient_id = in.readInt();
+        this.regimen_id = in.readInt();
+        this.therapist_id = in.readInt();
+        int tmpExercise_quality = in.readInt();
+        this.exercise_quality = tmpExercise_quality == -1 ? null : QUALITY.values()[tmpExercise_quality];
+        this.complete = in.readByte() != 0;
+        this.due_date = (Calendar) in.readSerializable();
+        this.time_updated = (Calendar) in.readSerializable();
+    }
+
+    public static final Parcelable.Creator<ExerciseRegimen> CREATOR = new Parcelable.Creator<ExerciseRegimen>() {
+        @Override
+        public ExerciseRegimen createFromParcel(Parcel source) {
+            return new ExerciseRegimen(source);
+        }
+
+        @Override
+        public ExerciseRegimen[] newArray(int size) {
+            return new ExerciseRegimen[size];
+        }
+    };
 }

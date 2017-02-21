@@ -61,6 +61,7 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
         try {
             url1 = new URL(url[0]);
+
             urlconn = url1.openConnection();
             bufferedReader = new BufferedReader(new InputStreamReader(urlconn.getInputStream()));
 
@@ -124,6 +125,7 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
             //therapist ID
             tID = obj.getInt(THERAPIST_ID);
+
 
             //don't update the time updated for now, it's okay
             er = new ExerciseRegimen(eID,reps,set,pID,rID,tID,quality,complete,dueDate,timeUpdated);
