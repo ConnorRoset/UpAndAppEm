@@ -82,9 +82,9 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
                             .commit();
                 } else {
                     Context context = v.getContext();
-                    Intent intent = new Intent(context, ExerciseDetailActivity.class);
+                    Intent intent = new Intent(((ExerciseListActivity) context), ExerciseDetailActivity.class);
                     intent.putExtras(exerciseInfo);
-                    context.startActivity(intent);
+                    ((ExerciseListActivity) context).startActivityForResult(intent, ExerciseListActivity.EXERCISE_DETAIL);
                 }
             }
         });

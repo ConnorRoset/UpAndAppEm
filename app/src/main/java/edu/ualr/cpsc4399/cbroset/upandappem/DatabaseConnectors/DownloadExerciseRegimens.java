@@ -129,7 +129,6 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
             //don't update the time updated for now, it's okay
             er = new ExerciseRegimen(eID,reps,set,pID,rID,tID,quality,complete,dueDate,timeUpdated);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

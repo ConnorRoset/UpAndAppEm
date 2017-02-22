@@ -54,6 +54,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     private static final String ROOT_URL = "http://10.0.2.2:5000";
     //starting other activity codes:
     public static final int SETTINGS_ACTIVITY_RESULT = 0;
+    public static final int EXERCISE_DETAIL = 1;
 
     //sharedprefs information:
     public static final String MY_PREFS = "MyPrefs";
@@ -117,11 +118,11 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     public void getExerciseRegimensFromDatabase() {
-        //Here is where all the information regarding the workout fetching from the database will be
+
+    //Download the exerciseRegimens for today, as of right now it will only
         try {
 
             String url = ROOT_URL + "/exercise_regimen/" + sharedPreferences.getString(USER_ID, "");
-
             new DownloadExerciseRegimens(this).execute(url);
 
 
@@ -139,9 +140,6 @@ public class ExerciseListActivity extends AppCompatActivity {
             try {
 
                 String url = ROOT_URL + "/exercise/" + er.getExercise_id();
-                //Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
-                //on the post execution step for each on, a call to addExerciseInfoToRegimen is
-                // made to build up the InfoRegs
                 new DownloadExerciseInfo(this).execute(url);
 
 
@@ -155,21 +153,20 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     public void setExerciseRegimens(List<ExerciseRegimen> exerciseRegimens) {
 
+        //this may be a good function in which to manipulate the date function on the exercises to
+        //display for the day
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
 
     public void addExerciseInfoToRegimen(ExerciseInfo exerciseInfo) {
-        for(ExerciseRegimen er : exerciseRegimens){
-            if(er.getExercise_id() == exerciseInfo.getExercise_id()){
+        for (ExerciseRegimen er : exerciseRegimens) {
+            if (er.getExercise_id() == exerciseInfo.getExercise_id()) {
                 infoRegs.add(new InfoReg(er, exerciseInfo));
             }
         }
         //after a change has happened, notify the recylerview to update
-        recyclerView.getAdapter().notifyDataSetChanged();
-        //this.exerciseInfos.add(exerciseInfo);
+        refreshScreen();
     }
-
-
 
 
     @Override
@@ -190,15 +187,32 @@ public class ExerciseListActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT).show();
                     exerciseRegimens.clear();
-
-
                 }
-
             }
         }
-        recyclerView.getAdapter().notifyDataSetChanged();
+        else if (requestCode == EXERCISE_DETAIL) {
+            if (resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                //get the exercise id & the complete status from the bundle
+
+                if (bundle.containsKey(DownloadExerciseRegimens.COMPLETE)){
+                    //Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+
+                    //this is where the async task to the database will need to be made to update the exercise
+                }
+                updateExerciseRegimen(bundle.getInt(DownloadExerciseRegimens.REGIMEN_ID), bundle.getBoolean(DownloadExerciseRegimens.COMPLETE));
+            }
+        }
+        refreshScreen();
     }
 
+    private void updateExerciseRegimen(int regimen_id, boolean complete) {
+        for (InfoReg ir : infoRegs) {
+            if (ir.getExerciseRegimen().getRegimen_id() == regimen_id) {
+                ir.getExerciseRegimen().setComplete(complete);
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -233,90 +247,16 @@ public class ExerciseListActivity extends AppCompatActivity {
     public void refreshScreen() {
         //refresh the recyclerview with the notifydatachanged
         recyclerView.getAdapter().notifyDataSetChanged();
-//        if(exerciseRegimens.isEmpty()){
-//            Toast.makeText(getApplicationContext(), "Oops", Toast.LENGTH_SHORT).show();
-//        }
     }
 
-    //recyclerview setup information
+
+        //recyclerview setup information
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
         //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-    }
-
-    public class ExerciseRegimenRecyclerViewAdapter
-            extends RecyclerView.Adapter<ExerciseRegimenRecyclerViewAdapter.ViewHolder> {
-
-        private final List<ExerciseRegimen> mExerciseRegimens;
-
-        public ExerciseRegimenRecyclerViewAdapter(List<ExerciseRegimen> items) {
-            this.mExerciseRegimens = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            CardView view = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_card_card_layout, parent, false);
-            //this will get changed to the card layout file
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-            holder.title.setText(String.valueOf(exerciseRegimens.get(position).getExercise_id()));
-            String FormattedDate = android.text.format.DateFormat.getLongDateFormat(getApplicationContext()).format(exerciseRegimens.get(position).getDue_date().getTime());
-            holder.date.setText(FormattedDate);
-            holder.mReps.setText((String.valueOf(exerciseRegimens.get(position).getExercise_reps())));
-            holder.mSets.setText((String.valueOf(exerciseRegimens.get(position).getExercise_set())));
-
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle exerciseInfo = new Bundle();
-
-                    if (mTwoPane) {
-                        //Bundle arguments = new Bundle();
-                        //arguments.putString(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        ExerciseDetailFragment fragment = new ExerciseDetailFragment();
-                        fragment.setArguments(exerciseInfo);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.exercise_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ExerciseDetailActivity.class);
-                        intent.putExtras(exerciseInfo);
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mExerciseRegimens.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final CardView cardView;
-            public final TextView title;
-            public final TextView date;
-            public TextView mReps;
-            public TextView mSets;
-
-            public ViewHolder(CardView view) {
-                super(view);
-                cardView = (CardView) view.findViewById(R.id.exercise_card_view);
-                title = (TextView) view.findViewById(R.id.exercise_card_title);
-                date = (TextView) view.findViewById(R.id.exercise_card_date);
-                mReps = (TextView) view.findViewById(R.id.exercise_card_reps);
-                mSets = (TextView) view.findViewById(R.id.exercise_card_sets);
-            }
-
-
-        }
     }
 
 

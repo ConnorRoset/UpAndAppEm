@@ -9,8 +9,25 @@
     android:orientation="vertical"
     tools:context="edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity">
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/exercise_detail_set_textView"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/exercise_detail_rep_textView"
+        android:layout_height="wrap_content" />
+   <TextView
+       android:layout_width="match_parent"
+       android:id="@+id/exercise_detail_instructions_textView"
+       android:layout_height="wrap_content" />
+    <ToggleButton
+        android:layout_width="match_parent"
+        android:id="@+id/exercise_detail_complete_toggleButton"
+        android:layout_height="wrap_content" />
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Blip"/>
-
+        android:text="@string/finish"
+        android:id="@+id/exercise_detail_finish_button"/>
 </LinearLayout>

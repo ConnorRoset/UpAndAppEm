@@ -1,6 +1,7 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +9,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import org.w3c.dom.Text;
+
+import java.util.Calendar;
+
+import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseRegimens;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 
@@ -25,15 +35,15 @@ public class ExerciseDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
+    //Build an infoReg object from the recieved bundle
     private InfoReg infoReg;
     private Bundle bundle;
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+
+    //Visual objects
+    Button finish;
+    TextView reps, sets, instructions;
+    ToggleButton complete;
+
     public ExerciseDetailFragment() {
     }
 
@@ -51,11 +61,53 @@ public class ExerciseDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.exercise_detail, container, false);
 
+
+        //use a bundle to handle everything here
         // Show the dummy content as text in a TextView.
 //        if (mExerciseInfo != null) {
 //            //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
 //        }
 
         return rootView;
+    }
+
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        reps = (TextView) getActivity().findViewById(R.id.exercise_detail_rep_textView);
+        String temp = "Reps: " + String.valueOf(infoReg.getExerciseRegimen().getExercise_reps());
+        reps.setText(temp);
+
+        sets = (TextView) getActivity().findViewById(R.id.exercise_detail_set_textView);
+        temp = "Sets: " + String.valueOf(infoReg.getExerciseRegimen().getExercise_set());
+        sets.setText(temp);
+
+        instructions = (TextView) getActivity().findViewById(R.id.exercise_detail_instructions_textView);
+        instructions.setText(infoReg.getExerciseInfo().getInstructions());
+
+        complete = (ToggleButton) getActivity().findViewById(R.id.exercise_detail_complete_toggleButton);
+        complete.setTextOff("Incomplete");
+        complete.setTextOn("Complete");
+        if(infoReg.getExerciseRegimen().isComplete()){
+            complete.setChecked(true);
+        } else{
+            complete.setChecked(false);
+        }
+        finish = (Button) getActivity().findViewById(R.id.exercise_detail_finish_button);
+        finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent();
+                Bundle rBundle = new Bundle();
+                //populate the bundle with the result
+                rBundle.putBoolean(DownloadExerciseRegimens.COMPLETE, infoReg.getExerciseRegimen().isComplete());
+                rBundle.putInt(DownloadExerciseRegimens.REGIMEN_ID, infoReg.getExerciseRegimen().getRegimen_id());
+                rBundle.putSerializable(DownloadExerciseRegimens.TIME_UPDATED, Calendar.getInstance());
+                intent.putExtras(rBundle);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
+            }
+        });
+
     }
 }
