@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -91,11 +92,28 @@ public class ExerciseDetailFragment extends Fragment {
         } else{
             complete.setChecked(false);
         }
+        complete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    finish.setEnabled(true);
+
+                } else{
+                    finish.setEnabled(false);
+                }
+            }
+        });
+
         finish = (Button) getActivity().findViewById(R.id.exercise_detail_finish_button);
+        if(infoReg.getExerciseRegimen().isComplete()){
+            finish.setEnabled(true);
+        } else{
+            finish.setEnabled(false);
+        }
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                infoReg.getExerciseRegimen().setComplete(true);
 
                 Intent intent = new Intent();
                 Bundle rBundle = new Bundle();

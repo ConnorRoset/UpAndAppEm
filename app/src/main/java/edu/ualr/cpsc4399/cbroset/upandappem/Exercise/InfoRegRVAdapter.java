@@ -2,6 +2,7 @@ package edu.ualr.cpsc4399.cbroset.upandappem.Exercise;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -64,7 +65,9 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
     @Override
     public void onBindViewHolder(final InfoRegViewHolder infoRegViewHolder, final int i) {
         final InfoReg mInfoReg = infoRegs.get(i);
-
+        if(mInfoReg.getExerciseRegimen().isComplete()){
+            infoRegViewHolder.cardview.setCardBackgroundColor(Color.GRAY);
+        }
         infoRegViewHolder.cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

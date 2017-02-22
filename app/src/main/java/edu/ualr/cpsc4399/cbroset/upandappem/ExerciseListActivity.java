@@ -101,14 +101,10 @@ public class ExerciseListActivity extends AppCompatActivity {
         // Toast.makeText(this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
 
         if (isLoggedIn) {
-            //both of these methods must be called before
             getExerciseRegimensFromDatabase();
-            // getExerciseInfoFromDatabase();
             recyclerView.getAdapter().notifyDataSetChanged();
         } else {
-
             Toast.makeText(this, "Log in via the settings on the top right", Toast.LENGTH_SHORT).show();
-
         }
 
         //check for tablet layout
@@ -174,7 +170,16 @@ public class ExerciseListActivity extends AppCompatActivity {
         super.onResume();
         refreshScreen();
     }
-
+    @Override
+    public void onPause(){
+        super.onPause();
+        //Toast.makeText(this, "Main paused", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onStop(){
+        super.onStop();
+        //Toast.makeText(this, "Main stopped", Toast.LENGTH_SHORT).show();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SETTINGS_ACTIVITY_RESULT) {
