@@ -67,6 +67,7 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
         final InfoReg mInfoReg = infoRegs.get(i);
         if(mInfoReg.getExerciseRegimen().isComplete()){
             infoRegViewHolder.cardview.setCardBackgroundColor(Color.GRAY);
+            infoRegViewHolder.cardview.setEnabled(false);
         }
         infoRegViewHolder.cardview.setOnClickListener(new View.OnClickListener() {
             @Override
