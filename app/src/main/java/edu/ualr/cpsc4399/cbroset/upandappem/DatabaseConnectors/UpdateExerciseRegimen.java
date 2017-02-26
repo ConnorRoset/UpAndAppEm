@@ -54,10 +54,11 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setConnectTimeout(50);
-            connection.connect();
+
             //connection.setRequestProperty("Accept", "application/json");
            // DataOutputStream dataOut = new DataOutputStream(connection.getOutputStream());
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
+            connection.connect();
             //Build the string/json
             json = new JSONObject();
            // {"complete":true, "regimen_id":3}
@@ -68,6 +69,7 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
             osw.write(json.toString());
             osw.flush();
             osw.close();
+            connection.disconnect();
 
 
         } catch (IOException e) {
@@ -79,7 +81,11 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
     }
     @Override
     protected void onPostExecute(InfoReg infoReg){
-        Toast.makeText(activity, url1.toString(), Toast.LENGTH_LONG).show();
+        try {
+            Toast.makeText(activity, String.valueOf(connection.getResponseCode()), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
     }
 }
