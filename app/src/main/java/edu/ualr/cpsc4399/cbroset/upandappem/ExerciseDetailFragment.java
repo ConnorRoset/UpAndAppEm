@@ -19,6 +19,7 @@ import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
+import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseRegimens;
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.UpdateExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
@@ -81,27 +82,27 @@ public class ExerciseDetailFragment extends Fragment {
         complete = (ToggleButton) getActivity().findViewById(R.id.exercise_detail_complete_toggleButton);
         complete.setTextOff("Incomplete");
         complete.setTextOn("Complete");
-        if(infoReg.getExerciseRegimen().isComplete()){
+        if (infoReg.getExerciseRegimen().isComplete()) {
             complete.setChecked(true);
-        } else{
+        } else {
             complete.setChecked(false);
         }
         complete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+                if (b) {
                     finish.setEnabled(true);
 
-                } else{
+                } else {
                     finish.setEnabled(false);
                 }
             }
         });
 
         finish = (Button) getActivity().findViewById(R.id.exercise_detail_finish_button);
-        if(infoReg.getExerciseRegimen().isComplete()){
+        if (infoReg.getExerciseRegimen().isComplete()) {
             finish.setEnabled(true);
-        } else{
+        } else {
             finish.setEnabled(false);
         }
         finish.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +118,8 @@ public class ExerciseDetailFragment extends Fragment {
                 url = url.trim();
 
                 new UpdateExerciseRegimen(infoReg, (ExerciseDetailActivity) getActivity()).execute(url);
-
+                //url = ExerciseListActivity.ROOT_URL + "/exercise_regimen/" + infoReg.getExerciseRegimen().getRegimen_id();
+                       // new DownloadExerciseInfo(new ExerciseListActivity()).execute(url);
                 rBundle.putBoolean(DownloadExerciseRegimens.COMPLETE, infoReg.getExerciseRegimen().isComplete());
                 rBundle.putInt(DownloadExerciseRegimens.REGIMEN_ID, infoReg.getExerciseRegimen().getRegimen_id());
                 rBundle.putSerializable(DownloadExerciseRegimens.TIME_UPDATED, Calendar.getInstance());

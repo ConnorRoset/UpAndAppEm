@@ -1,4 +1,5 @@
 package edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors;
+
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -6,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,62 +32,63 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
     HttpURLConnection connection = null;
     JSONObject json = null;
     URL url1;
+    DataOutputStream dataOut = null;
+    BufferedWriter writer = null;
 
-
-    public UpdateExerciseRegimen(InfoReg infoReg, ExerciseDetailActivity activity){
+    public UpdateExerciseRegimen(InfoReg infoReg, ExerciseDetailActivity activity) {
         this.activity = activity;
         this.infoReg = infoReg;
 
     }
+
     @Override
-    public void onPreExecute(){
+    public void onPreExecute() {
         //
 
     }
+
     @Override
-    protected InfoReg doInBackground(String... url){
+    protected InfoReg doInBackground(String... url) {
         try {
             //Connect to the database
-            url1 = new URL(url[0]);
+            //build a json to update the database
+            json = new JSONObject();
+            json.put("complete", infoReg.getExerciseRegimen().isComplete());
+            json.put("regimen_id", infoReg.getExerciseRegimen().getRegimen_id());
 
+            //open the connection
+            url1 = new URL(url[0]);
             connection = (HttpURLConnection) url1.openConnection();
             connection.setRequestMethod("PUT");
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setConnectTimeout(50);
 
-            //connection.setRequestProperty("Accept", "application/json");
-           // DataOutputStream dataOut = new DataOutputStream(connection.getOutputStream());
-            OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
-            connection.connect();
-            //Build the string/json
-            json = new JSONObject();
-           // {"complete":true, "regimen_id":3}
-            json.put("complete", infoReg.getExerciseRegimen().isComplete());
-            json.put("regimen_id", infoReg.getExerciseRegimen().getRegimen_id());
-
-           // dataOut.writeBytes(json.toString());
-            osw.write(json.toString());
-            osw.flush();
-            osw.close();
-            connection.disconnect();
+            //send the request
+//            String response = json.toString();
+            dataOut = new DataOutputStream(connection.getOutputStream());
+            dataOut.writeBytes(json.toString());
+            //special line to force a connection.
+            connection.getResponseCode();
+            dataOut.flush();
+            dataOut.close();
 
 
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
         return infoReg;
     }
+
     @Override
-    protected void onPostExecute(InfoReg infoReg){
-        try {
-            Toast.makeText(activity, String.valueOf(connection.getResponseCode()), Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void onPostExecute(InfoReg infoReg) {
+
+        Toast.makeText(activity, connection.getRequestMethod(), Toast.LENGTH_LONG).show();
+
         //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
     }
 }
