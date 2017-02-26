@@ -1,24 +1,16 @@
 package edu.ualr.cpsc4399.cbroset.upandappem;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseInfo;
@@ -51,7 +43,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     private List<ExerciseInfo> exerciseInfos;
     private List<ExerciseRegimen> exerciseRegimens;
     private List<InfoReg> infoRegs;
-    private static final String ROOT_URL = "http://10.0.2.2:5000";
+    public static final String ROOT_URL = "http://10.0.2.2:5000";
     //starting other activity codes:
     public static final int SETTINGS_ACTIVITY_RESULT = 0;
     public static final int EXERCISE_DETAIL = 1;
@@ -115,7 +107,7 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     public void getExerciseRegimensFromDatabase() {
 
-    //Download the exerciseRegimens for today, as of right now it will only
+        //Download the exerciseRegimens for today, as of right now it will only
         try {
 
             String url = ROOT_URL + "/exercise_regimen/" + sharedPreferences.getString(USER_ID, "");
@@ -170,16 +162,19 @@ public class ExerciseListActivity extends AppCompatActivity {
         super.onResume();
         refreshScreen();
     }
+
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         //Toast.makeText(this, "Main paused", Toast.LENGTH_SHORT).show();
     }
+
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
         //Toast.makeText(this, "Main stopped", Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SETTINGS_ACTIVITY_RESULT) {
@@ -191,16 +186,19 @@ public class ExerciseListActivity extends AppCompatActivity {
 //                    setupRecyclerView(recyclerView);
                 } else {
                     Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT).show();
+                    //exerciseRegimens.clear();
+                    infoRegs.clear();
+
+                    exerciseInfos.clear();
                     exerciseRegimens.clear();
                 }
             }
-        }
-        else if (requestCode == EXERCISE_DETAIL) {
+        } else if (requestCode == EXERCISE_DETAIL) {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 //get the exercise id & the complete status from the bundle
 
-                if (bundle.containsKey(DownloadExerciseRegimens.COMPLETE)){
+                if (bundle.containsKey(DownloadExerciseRegimens.COMPLETE)) {
                     //Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
 
                     //this is where the async task to the database will need to be made to update the exercise
@@ -255,7 +253,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
 
-        //recyclerview setup information
+    //recyclerview setup information
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());

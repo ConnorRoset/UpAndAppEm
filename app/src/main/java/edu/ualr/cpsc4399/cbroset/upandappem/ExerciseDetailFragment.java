@@ -20,6 +20,7 @@ import org.w3c.dom.Text;
 import java.util.Calendar;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseRegimens;
+import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.UpdateExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 
@@ -45,6 +46,7 @@ public class ExerciseDetailFragment extends Fragment {
     TextView reps, sets, instructions;
     ToggleButton complete;
 
+
     public ExerciseDetailFragment() {
     }
 
@@ -61,14 +63,6 @@ public class ExerciseDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.exercise_detail, container, false);
-
-
-        //use a bundle to handle everything here
-        // Show the dummy content as text in a TextView.
-//        if (mExerciseInfo != null) {
-//            //((TextView) rootView.findViewById(R.id.exercise_detail)).setText(mExercise.getTitle());
-//        }
-
         return rootView;
     }
 
@@ -118,6 +112,12 @@ public class ExerciseDetailFragment extends Fragment {
                 Intent intent = new Intent();
                 Bundle rBundle = new Bundle();
                 //populate the bundle with the result
+                String url = "";
+                url = ExerciseListActivity.ROOT_URL + "/exercise_regimen";
+                url = url.trim();
+
+                new UpdateExerciseRegimen(infoReg, (ExerciseDetailActivity) getActivity()).execute(url);
+
                 rBundle.putBoolean(DownloadExerciseRegimens.COMPLETE, infoReg.getExerciseRegimen().isComplete());
                 rBundle.putInt(DownloadExerciseRegimens.REGIMEN_ID, infoReg.getExerciseRegimen().getRegimen_id());
                 rBundle.putSerializable(DownloadExerciseRegimens.TIME_UPDATED, Calendar.getInstance());

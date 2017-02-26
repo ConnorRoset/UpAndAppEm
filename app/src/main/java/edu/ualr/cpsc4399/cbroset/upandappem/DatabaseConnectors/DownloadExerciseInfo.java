@@ -54,10 +54,12 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
             //build the JSON string
             StringBuilder stringBuilder = new StringBuilder();
             String line;
+
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
 
             }
+
             JSONArray arry = new JSONArray(stringBuilder.toString());
             JSONObject obj = arry.getJSONObject(1);
             String name, instructions;
