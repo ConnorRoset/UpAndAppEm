@@ -43,7 +43,7 @@ public class ExerciseDetailFragment extends Fragment {
     private Bundle bundle;
 
     //Visual objects
-    Button finish;
+    Button finish, startSets, finishSets;
     TextView reps, sets, instructions;
     ToggleButton complete;
 
