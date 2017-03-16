@@ -23,6 +23,7 @@ import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseI
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.DownloadExerciseRegimens;
 import edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors.UpdateExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 
 /**
@@ -46,7 +47,7 @@ public class ExerciseDetailFragment extends Fragment {
     Button finish, startSets, finishSets;
     TextView reps, sets, instructions;
     ToggleButton complete;
-
+    int setIndex;
 
     public ExerciseDetailFragment() {
     }
@@ -67,6 +68,9 @@ public class ExerciseDetailFragment extends Fragment {
         return rootView;
     }
 
+    private void updateButtonText(){
+        startSets.setText("Set number");
+    }
     public void onViewCreated(View view, Bundle savedInstanceState) {
         reps = (TextView) getActivity().findViewById(R.id.exercise_detail_rep_textView);
         String temp = "Reps: " + String.valueOf(infoReg.getExerciseRegimen().getExercise_reps());
@@ -79,9 +83,11 @@ public class ExerciseDetailFragment extends Fragment {
         instructions = (TextView) getActivity().findViewById(R.id.exercise_detail_instructions_textView);
         instructions.setText(infoReg.getExerciseInfo().getInstructions());
 
+        //toggle button
         complete = (ToggleButton) getActivity().findViewById(R.id.exercise_detail_complete_toggleButton);
-        complete.setTextOff("Incomplete");
+        complete.setTextOff("Mark complete");
         complete.setTextOn("Complete");
+        complete.setEnabled(false);
         if (infoReg.getExerciseRegimen().isComplete()) {
             complete.setChecked(true);
         } else {
@@ -99,6 +105,44 @@ public class ExerciseDetailFragment extends Fragment {
             }
         });
 
+        //start and finish buttons for toggle
+        setIndex = 0;
+
+        //startSets.setText("Set " + setIndex+1 + " start");
+        startSets = (Button) getActivity().findViewById(R.id.set_start_button);
+        startSets.setText("Set " + (setIndex+1) + " start");
+        startSets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startSets.setEnabled(false);
+                finishSets.setEnabled(true);
+            }
+        });
+
+
+        finishSets = (Button) getActivity().findViewById(R.id.set_finish_button);
+        finishSets.setEnabled(false);
+        finishSets.setText("Set " + (setIndex+1) + " finish");
+        finishSets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setIndex++;
+                if(setIndex>=infoReg.getExerciseRegimen().getExercise_set()){
+                    startSets.setEnabled(false);
+                    finishSets.setEnabled(false);
+                    complete.setEnabled(true);
+                } else {
+                    startSets.setEnabled(true);
+                    finishSets.setEnabled(false);
+                    startSets.setText("Set " + (setIndex + 1) + " start");
+                    finishSets.setText("Set " + (setIndex + 1) + " finish");
+                }
+            }
+        });
+
+
+
+        //finish button
         finish = (Button) getActivity().findViewById(R.id.exercise_detail_finish_button);
         if (infoReg.getExerciseRegimen().isComplete()) {
             finish.setEnabled(true);
@@ -109,7 +153,7 @@ public class ExerciseDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 infoReg.getExerciseRegimen().setComplete(true);
-
+                infoReg.getExerciseRegimen().setExercise_quality(ExerciseRegimen.QUALITY.FIVE);
                 Intent intent = new Intent();
                 Bundle rBundle = new Bundle();
                 //populate the bundle with the result

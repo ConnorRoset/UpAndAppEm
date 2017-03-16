@@ -87,7 +87,7 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
     @Override
     protected void onPostExecute(InfoReg infoReg) {
 
-        Toast.makeText(activity, connection.getRequestMethod(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(activity, connection.getRequestMethod(), Toast.LENGTH_LONG).show();
 
         //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
     }
