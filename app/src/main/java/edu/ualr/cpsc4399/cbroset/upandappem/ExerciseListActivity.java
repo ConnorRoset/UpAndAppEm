@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,6 +24,8 @@ import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -88,13 +91,15 @@ public class ExerciseListActivity extends AppCompatActivity {
         setupRecyclerView(recyclerView);
 
 
+
         //check if user is logged in, else try to populate the list
         isLoggedIn = sharedPreferences.getBoolean(LOGGED_IN, false);
-        // Toast.makeText(this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
 
         if (isLoggedIn) {
             getExerciseRegimensFromDatabase();
             recyclerView.getAdapter().notifyDataSetChanged();
+
+
         } else {
             Toast.makeText(this, "Log in via the settings on the top right", Toast.LENGTH_SHORT).show();
         }
@@ -143,6 +148,7 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         //this may be a good function in which to manipulate the date function on the exercises to
         //display for the day
+
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
 
@@ -250,12 +256,19 @@ public class ExerciseListActivity extends AppCompatActivity {
     public void refreshScreen() {
         //refresh the recyclerview with the notifydatachanged
         recyclerView.getAdapter().notifyDataSetChanged();
+
     }
 
 
     //recyclerview setup information
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+//        ArrayList<InfoReg> today = new ArrayList<>();
+//        for (InfoReg infoReg : infoRegs) {
+//            {
+//                today.add(infoReg);
+//            }
+//        }
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
         //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
         recyclerView.setAdapter(adapter);

@@ -1,6 +1,8 @@
 package edu.ualr.cpsc4399.cbroset.upandappem.DatabaseConnectors;
 
 import android.os.AsyncTask;
+import android.text.format.DateUtils;
+import android.widget.Toast;
 
 
 import org.json.JSONObject;
@@ -78,7 +80,11 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             JSONArray sub = exerciseRegimenArray.getJSONArray(1);
             for (int i = 0; i < sub.length(); i++) {
                 JSONObject obj = sub.getJSONObject(i);
-                exerciseRegimens.add(getExerciseRegimenFromJSON(obj));
+                ExerciseRegimen er = getExerciseRegimenFromJSON(obj);
+                if(DateUtils.isToday(er.getDue_date().getTimeInMillis())){
+                    exerciseRegimens.add(er);
+                }
+                //exerciseRegimens.add(getExerciseRegimenFromJSON(obj));
             }
 
         } catch (IOException | JSONException e) {
@@ -109,7 +115,8 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             eID = obj.getInt(EXERCISE_ID);
 
             //EXERCISEQUALITY
-            quality = ExerciseRegimen.QUALITY.values()[obj.getInt(EXERCISE_QUALITY) -1];
+            //quality = ExerciseRegimen.QUALITY.values()[obj.getInt(EXERCISE_QUALITY) -1];
+            quality = ExerciseRegimen.QUALITY.ONE;
 
             //exercise reps
             reps = obj.getInt(EXERCISE_REPS);
@@ -128,7 +135,7 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
 
             //don't update the time updated for now, it's okay
-            er = new ExerciseRegimen(eID,reps,set,pID,rID,tID,quality,complete,dueDate,timeUpdated);
+                er = new ExerciseRegimen(eID, reps, set, pID, rID, tID, quality, complete, dueDate, timeUpdated);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -142,7 +149,13 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
         //callback from main activity to set up the exercise regimens
         activity.setExerciseRegimens(exerciseRegimens);
+        String temp = "";
+        if(exerciseRegimens.size() == 0){
+            temp = "No workouts Today!";
+        }
 
+
+        Toast.makeText(activity.getApplicationContext(), temp, Toast.LENGTH_LONG).show();
         //only after that one has finished calling can we attempt to fetch the info for the exercises
         activity.getExerciseInfoFromDatabase();
         //Toast.makeText(activity.getApplicationContext(), response, Toast.LENGTH_LONG).show();

@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.List;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseDetailActivity;
@@ -86,6 +89,13 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
                             .commit();
                 } else {
                     Context context = v.getContext();
+
+//                    String temp = String.valueOf(mInfoReg.getExerciseRegimen().getDue_date().getTimeInMillis() )+ '\n' + String.valueOf(Calendar.getInstance().getTimeInMillis());
+//                    if(DateUtils.isToday(mInfoReg.getExerciseRegimen().getDue_date().getTimeInMillis())){
+//                        temp = "today";
+//                    } else
+//                        temp = "not today";
+//                    Toast.makeText(context, temp, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(((ExerciseListActivity) context), ExerciseDetailActivity.class);
                     intent.putExtras(exerciseInfo);
                     ((ExerciseListActivity) context).startActivityForResult(intent, ExerciseListActivity.EXERCISE_DETAIL);
