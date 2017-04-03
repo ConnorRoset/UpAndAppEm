@@ -17,6 +17,7 @@ import java.util.List;
 
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
+import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 import edu.ualr.cpsc4399.cbroset.upandappem.ExerciseListActivity;
 
 /**
@@ -29,14 +30,15 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
 
     private ExerciseListActivity activity;
     private ExerciseInfo exerciseInfo = null;
-
+    private ExerciseRegimen exerciseRegimen;
 
     //connection info
    // String urly;
     URLConnection urlconn = null;
     BufferedReader bufferedReader = null;
-    public DownloadExerciseInfo(ExerciseListActivity activity){
+    public DownloadExerciseInfo(ExerciseListActivity activity, ExerciseRegimen exerciseRegimen){
         this.activity = activity;
+        this.exerciseRegimen = exerciseRegimen;
     }
 
     @Override
@@ -79,6 +81,7 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
     @Override
     protected void onPostExecute(ExerciseInfo exerciseInfo){
         //Toast.makeText(activity.getApplicationContext(), urly, Toast.LENGTH_SHORT).show();
-        activity.addExerciseInfoToRegimen(exerciseInfo);
+        //activity.addExerciseInfoToRegimen(exerciseInfo);
+        activity.addInfoRegToRegimen(new InfoReg(exerciseRegimen,exerciseInfo));
     }
 }

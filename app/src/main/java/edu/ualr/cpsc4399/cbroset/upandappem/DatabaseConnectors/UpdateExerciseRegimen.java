@@ -55,7 +55,8 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
             json = new JSONObject();
             json.put("complete", infoReg.getExerciseRegimen().isComplete());
             json.put("regimen_id", infoReg.getExerciseRegimen().getRegimen_id());
-
+            json.put("exercise_quality", infoReg.getExerciseRegimen().getExercise_quality().ordinal());
+            //right here is where we need to add the put for the exercise Quality
             //open the connection
             url1 = new URL(url[0]);
             connection = (HttpURLConnection) url1.openConnection();

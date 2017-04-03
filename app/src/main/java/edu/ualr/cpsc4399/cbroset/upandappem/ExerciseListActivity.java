@@ -42,6 +42,26 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     public boolean mTwoPane; //for whether it is tablet or not
 
+    public List<ExerciseInfo> getExerciseInfos() {
+        return exerciseInfos;
+    }
+
+    public void setExerciseInfos(List<ExerciseInfo> exerciseInfos) {
+        this.exerciseInfos = exerciseInfos;
+    }
+
+    public List<ExerciseRegimen> getExerciseRegimens() {
+        return exerciseRegimens;
+    }
+
+    public List<InfoReg> getInfoRegs() {
+        return infoRegs;
+    }
+
+    public void setInfoRegs(List<InfoReg> infoRegs) {
+        this.infoRegs = infoRegs;
+    }
+
     //variables throughout the app
     private List<ExerciseInfo> exerciseInfos;
     private List<ExerciseRegimen> exerciseRegimens;
@@ -133,7 +153,7 @@ public class ExerciseListActivity extends AppCompatActivity {
             try {
 
                 String url = ROOT_URL + "/exercise/" + er.getExercise_id();
-                new DownloadExerciseInfo(this).execute(url);
+                new DownloadExerciseInfo(this, er).execute(url);
 
 
             } catch (UnknownError e) {
@@ -152,17 +172,12 @@ public class ExerciseListActivity extends AppCompatActivity {
         this.exerciseRegimens.addAll(exerciseRegimens);
     }
 
-    public void addExerciseInfoToRegimen(ExerciseInfo exerciseInfo) {
-        for (ExerciseRegimen er : exerciseRegimens) {
-            if (er.getExercise_id() == exerciseInfo.getExercise_id()) {
-                infoRegs.add(new InfoReg(er, exerciseInfo));
-            }
-        }
-        //after a change has happened, notify the recylerview to update
+
+
+    public void addInfoRegToRegimen(InfoReg infoReg){
+        infoRegs.add(infoReg);
         refreshScreen();
     }
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -244,8 +259,8 @@ public class ExerciseListActivity extends AppCompatActivity {
             startActivityForResult(intent, SETTINGS_ACTIVITY_RESULT);
             return true;
         } else if (id == R.id.action_message) {
-            //build a messaging activity here
-            startActivity(new Intent(this, MessagesActivity.class));
+//            //build a messaging activity here
+//            startActivity(new Intent(this, MessagesActivity.class));
             return true;
         } else if (id == R.id.action_refresh) {
             refreshScreen();
@@ -263,14 +278,8 @@ public class ExerciseListActivity extends AppCompatActivity {
     //recyclerview setup information
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-//        ArrayList<InfoReg> today = new ArrayList<>();
-//        for (InfoReg infoReg : infoRegs) {
-//            {
-//                today.add(infoReg);
-//            }
-//        }
+
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
-        //recyclerView.setAdapter(new ExerciseRegimenRecyclerViewAdapter(exerciseRegimens));
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }

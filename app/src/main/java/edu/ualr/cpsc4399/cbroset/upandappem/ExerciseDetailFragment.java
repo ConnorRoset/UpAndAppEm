@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.icu.text.IDNA;
 import android.os.Bundle;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -48,6 +49,8 @@ public class ExerciseDetailFragment extends Fragment {
     TextView reps, sets, instructions;
     ToggleButton complete;
     int setIndex;
+    Calendar startTime, endTime, durationTime;
+    int exerciseQuality = ExerciseRegimen.QUALITY.values().length -1; //needs to be bound between 0-9;
 
     public ExerciseDetailFragment() {
     }
@@ -68,9 +71,10 @@ public class ExerciseDetailFragment extends Fragment {
         return rootView;
     }
 
-    private void updateButtonText(){
+    private void updateButtonText() {
         startSets.setText("Set number");
     }
+
     public void onViewCreated(View view, Bundle savedInstanceState) {
         reps = (TextView) getActivity().findViewById(R.id.exercise_detail_rep_textView);
         String temp = "Reps: " + String.valueOf(infoReg.getExerciseRegimen().getExercise_reps());
@@ -83,11 +87,16 @@ public class ExerciseDetailFragment extends Fragment {
         instructions = (TextView) getActivity().findViewById(R.id.exercise_detail_instructions_textView);
         instructions.setText(infoReg.getExerciseInfo().getInstructions());
 
+        //Time tools
+        startTime = Calendar.getInstance();
+        endTime = Calendar.getInstance();
+        durationTime = Calendar.getInstance();
         //toggle button
         complete = (ToggleButton) getActivity().findViewById(R.id.exercise_detail_complete_toggleButton);
         complete.setTextOff("Mark complete");
         complete.setTextOn("Complete");
         complete.setEnabled(false);
+
         if (infoReg.getExerciseRegimen().isComplete()) {
             complete.setChecked(true);
         } else {
@@ -110,24 +119,52 @@ public class ExerciseDetailFragment extends Fragment {
 
         //startSets.setText("Set " + setIndex+1 + " start");
         startSets = (Button) getActivity().findViewById(R.id.set_start_button);
-        startSets.setText("Set " + (setIndex+1) + " start");
+        startSets.setText("Set " + (setIndex + 1) + " start");
         startSets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startSets.setEnabled(false);
                 finishSets.setEnabled(true);
+                startTime = Calendar.getInstance();
             }
         });
 
 
         finishSets = (Button) getActivity().findViewById(R.id.set_finish_button);
         finishSets.setEnabled(false);
-        finishSets.setText("Set " + (setIndex+1) + " finish");
+        finishSets.setText("Set " + (setIndex + 1) + " finish");
         finishSets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                endTime = Calendar.getInstance();
+                // durationTime = Calendar.getInstance();
+                durationTime.setTimeInMillis(endTime.getTimeInMillis() - startTime.getTimeInMillis());
+
+                //check if time is less than 5 seconds
+                if (durationTime.getTimeInMillis() < 5000) {
+                    //Toast.makeText(getContext(), "BAD!", Toast.LENGTH_SHORT).show();
+                    //They have failed it because they are clicking too quickly
+                    exerciseQuality = exerciseQuality - 2;
+                    if (exerciseQuality < 0) {
+                        exerciseQuality = 0;
+                    }
+
+                }
+
+                //check if greater than 1 minute per set
+                else if (durationTime.getTimeInMillis() > 60000) {
+                    //simple decrement to decrease overall score.
+                    //this would need more extensive analysis from a PT to determine good scores.
+                    //bounds check, as well
+                    exerciseQuality--;
+                    if(exerciseQuality< 0){
+                        exerciseQuality = 0;
+                    }
+                }
+                //exerciseQuality = 9;
                 setIndex++;
-                if(setIndex>=infoReg.getExerciseRegimen().getExercise_set()){
+                if (setIndex >= infoReg.getExerciseRegimen().getExercise_set()) {
                     startSets.setEnabled(false);
                     finishSets.setEnabled(false);
                     complete.setEnabled(true);
@@ -141,7 +178,6 @@ public class ExerciseDetailFragment extends Fragment {
         });
 
 
-
         //finish button
         finish = (Button) getActivity().findViewById(R.id.exercise_detail_finish_button);
         if (infoReg.getExerciseRegimen().isComplete()) {
@@ -153,7 +189,8 @@ public class ExerciseDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 infoReg.getExerciseRegimen().setComplete(true);
-                infoReg.getExerciseRegimen().setExercise_quality(ExerciseRegimen.QUALITY.FIVE);
+                infoReg.getExerciseRegimen().setExercise_quality(ExerciseRegimen.QUALITY.values()[exerciseQuality]);
+                infoReg.getExerciseRegimen().setTime_updated(Calendar.getInstance());
                 Intent intent = new Intent();
                 Bundle rBundle = new Bundle();
                 //populate the bundle with the result
@@ -161,9 +198,10 @@ public class ExerciseDetailFragment extends Fragment {
                 url = ExerciseListActivity.ROOT_URL + "/exercise_regimen";
                 url = url.trim();
 
+                //update the database with the completed exercise
                 new UpdateExerciseRegimen(infoReg, (ExerciseDetailActivity) getActivity()).execute(url);
-                //url = ExerciseListActivity.ROOT_URL + "/exercise_regimen/" + infoReg.getExerciseRegimen().getRegimen_id();
-                       // new DownloadExerciseInfo(new ExerciseListActivity()).execute(url);
+
+
                 rBundle.putBoolean(DownloadExerciseRegimens.COMPLETE, infoReg.getExerciseRegimen().isComplete());
                 rBundle.putInt(DownloadExerciseRegimens.REGIMEN_ID, infoReg.getExerciseRegimen().getRegimen_id());
                 rBundle.putSerializable(DownloadExerciseRegimens.TIME_UPDATED, Calendar.getInstance());

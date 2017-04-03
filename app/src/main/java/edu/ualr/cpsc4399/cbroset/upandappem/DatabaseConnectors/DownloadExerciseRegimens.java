@@ -81,9 +81,15 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             for (int i = 0; i < sub.length(); i++) {
                 JSONObject obj = sub.getJSONObject(i);
                 ExerciseRegimen er = getExerciseRegimenFromJSON(obj);
-                if(DateUtils.isToday(er.getDue_date().getTimeInMillis())){
+//                if (DateUtils.isToday(er.getDue_date().getTimeInMillis())) {
+//                    exerciseRegimens.add(er);
+//                }
+                if(activity.getExerciseRegimens().contains(er)){
+//                    exerciseRegimens.add(er);
+                } else{
                     exerciseRegimens.add(er);
                 }
+
                 //exerciseRegimens.add(getExerciseRegimenFromJSON(obj));
             }
 
@@ -106,17 +112,17 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             //due date
             String tempDate = obj.getString(DUE_DATE);
             SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
-                try {
-                    dueDate.setTime(sdf.parse(tempDate));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            try {
+                dueDate.setTime(sdf.parse(tempDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             //Exercise Id
             eID = obj.getInt(EXERCISE_ID);
 
             //EXERCISEQUALITY
             //quality = ExerciseRegimen.QUALITY.values()[obj.getInt(EXERCISE_QUALITY) -1];
-            quality = ExerciseRegimen.QUALITY.ONE;
+            quality = ExerciseRegimen.QUALITY.TEN;
 
             //exercise reps
             reps = obj.getInt(EXERCISE_REPS);
@@ -133,9 +139,9 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             //therapist ID
             tID = obj.getInt(THERAPIST_ID);
 
-
             //don't update the time updated for now, it's okay
-                er = new ExerciseRegimen(eID, reps, set, pID, rID, tID, quality, complete, dueDate, timeUpdated);
+            //no need to do the time updated, that pulls system time on the database
+            er = new ExerciseRegimen(eID, reps, set, pID, rID, tID, quality, complete, dueDate, timeUpdated);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -150,19 +156,18 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
         //callback from main activity to set up the exercise regimens
         activity.setExerciseRegimens(exerciseRegimens);
         String temp = "";
-        if(exerciseRegimens.size() == 0){
+        if (exerciseRegimens.size() == 0) {
             temp = "No workouts Today!";
+            Toast.makeText(activity.getApplicationContext(), temp, Toast.LENGTH_LONG).show();
+        } else {
+
+
+            //only after that one has finished calling can we attempt to fetch the info for the exercises
+            activity.getExerciseInfoFromDatabase();
         }
-
-
-        Toast.makeText(activity.getApplicationContext(), temp, Toast.LENGTH_LONG).show();
-        //only after that one has finished calling can we attempt to fetch the info for the exercises
-        activity.getExerciseInfoFromDatabase();
-        //Toast.makeText(activity.getApplicationContext(), response, Toast.LENGTH_LONG).show();
+        Toast.makeText(activity.getApplicationContext(), String.valueOf(activity.getExerciseRegimens().size()), Toast.LENGTH_LONG).show();
 
     }
-
-
 
 
 }
