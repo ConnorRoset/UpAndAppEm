@@ -81,12 +81,8 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             for (int i = 0; i < sub.length(); i++) {
                 JSONObject obj = sub.getJSONObject(i);
                 ExerciseRegimen er = getExerciseRegimenFromJSON(obj);
-//                if (DateUtils.isToday(er.getDue_date().getTimeInMillis())) {
-//                    exerciseRegimens.add(er);
-//                }
-                if(activity.getExerciseRegimens().contains(er)){
-//                    exerciseRegimens.add(er);
-                } else{
+
+                if (DateUtils.isToday(er.getDue_date().getTimeInMillis())) {
                     exerciseRegimens.add(er);
                 }
 
@@ -165,7 +161,7 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             //only after that one has finished calling can we attempt to fetch the info for the exercises
             activity.getExerciseInfoFromDatabase();
         }
-        Toast.makeText(activity.getApplicationContext(), String.valueOf(activity.getExerciseRegimens().size()), Toast.LENGTH_LONG).show();
+        //Toast.makeText(activity.getApplicationContext(), String.valueOf(activity.getExerciseRegimens().size()), Toast.LENGTH_LONG).show();
 
     }
 

@@ -78,8 +78,6 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
                 Bundle exerciseInfo = new Bundle();
                 exerciseInfo.putParcelable("EXERCISE_INFO", mInfoReg);
                 if (((ExerciseListActivity) v.getContext()).mTwoPane) {
-                    //Bundle arguments = new Bundle();
-                    //arguments.putString(ExerciseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                     ExerciseDetailFragment fragment = new ExerciseDetailFragment();
                     fragment.setArguments(exerciseInfo);
 
@@ -89,24 +87,18 @@ public class InfoRegRVAdapter extends RecyclerView.Adapter<InfoRegRVAdapter.Info
                             .commit();
                 } else {
                     Context context = v.getContext();
-
-//                    String temp = String.valueOf(mInfoReg.getExerciseRegimen().getDue_date().getTimeInMillis() )+ '\n' + String.valueOf(Calendar.getInstance().getTimeInMillis());
-//                    if(DateUtils.isToday(mInfoReg.getExerciseRegimen().getDue_date().getTimeInMillis())){
-//                        temp = "today";
-//                    } else
-//                        temp = "not today";
-//                    Toast.makeText(context, temp, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(((ExerciseListActivity) context), ExerciseDetailActivity.class);
                     intent.putExtras(exerciseInfo);
                     ((ExerciseListActivity) context).startActivityForResult(intent, ExerciseListActivity.EXERCISE_DETAIL);
                 }
             }
         });
+
         infoRegViewHolder.exercise.setText(String.valueOf(infoRegs.get(i).getExerciseInfo().getExercise_name()));
         String formattedDate = android.text.format.DateFormat.getLongDateFormat(context.getApplicationContext()).format(infoRegs.get(i).getExerciseRegimen().getDue_date().getTime());
         infoRegViewHolder.date.setText(formattedDate);
-        infoRegViewHolder.reps.setText((String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_reps())));
-        infoRegViewHolder.sets.setText((String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_set())));
+        infoRegViewHolder.reps.setText("Reps: " + (String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_reps())));
+        infoRegViewHolder.sets.setText("Sets: " + (String.valueOf(infoRegs.get(i).getExerciseRegimen().getExercise_set())));
     }
 
     @Override

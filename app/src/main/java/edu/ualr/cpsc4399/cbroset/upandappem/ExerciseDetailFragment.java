@@ -145,7 +145,8 @@ public class ExerciseDetailFragment extends Fragment {
                 if (durationTime.getTimeInMillis() < 5000) {
                     //Toast.makeText(getContext(), "BAD!", Toast.LENGTH_SHORT).show();
                     //They have failed it because they are clicking too quickly
-                    exerciseQuality = exerciseQuality - 2;
+                    int factor = 10/infoReg.getExerciseRegimen().getExercise_set();
+                    exerciseQuality = exerciseQuality - factor;
                     if (exerciseQuality < 0) {
                         exerciseQuality = 0;
                     }

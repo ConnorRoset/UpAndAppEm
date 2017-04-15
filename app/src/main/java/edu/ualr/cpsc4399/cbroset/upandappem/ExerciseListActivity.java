@@ -2,6 +2,7 @@ package edu.ualr.cpsc4399.cbroset.upandappem;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -161,7 +162,6 @@ public class ExerciseListActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        //
     }
 
     public void setExerciseRegimens(List<ExerciseRegimen> exerciseRegimens) {
@@ -258,13 +258,14 @@ public class ExerciseListActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityForResult(intent, SETTINGS_ACTIVITY_RESULT);
             return true;
-        } else if (id == R.id.action_message) {
-//            //build a messaging activity here
-//            startActivity(new Intent(this, MessagesActivity.class));
-            return true;
-        } else if (id == R.id.action_refresh) {
-            refreshScreen();
         }
+// else if (id == R.id.action_message) {
+////            //build a messaging activity here
+////            startActivity(new Intent(this, MessagesActivity.class));
+//            return true;
+//        } else if (id == R.id.action_refresh) {
+//            refreshScreen();
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -278,7 +279,15 @@ public class ExerciseListActivity extends AppCompatActivity {
     //recyclerview setup information
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-
+//        List<InfoReg> todayWorkouts = new ArrayList<>();
+//        for(InfoReg infoReg : infoRegs){
+//            if(DateUtils.isToday(infoReg.getExerciseRegimen().getDue_date().getTimeInMillis())){
+//                Toast.makeText(this, "true!", Toast.LENGTH_SHORT).show();
+//                todayWorkouts.add(infoReg);
+//            } else{
+//                Toast.makeText(this, "false", Toast.LENGTH_SHORT).show();
+//            }
+//        }
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
