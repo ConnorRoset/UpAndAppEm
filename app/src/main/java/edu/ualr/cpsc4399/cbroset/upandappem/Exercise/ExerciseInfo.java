@@ -63,7 +63,8 @@ public class ExerciseInfo implements Parcelable {
         this.instructions = in.readString();
     }
 
-    public static final Parcelable.Creator<ExerciseInfo> CREATOR = new Parcelable.Creator<ExerciseInfo>() {
+    public static final Parcelable.Creator<ExerciseInfo> CREATOR = new
+            Parcelable.Creator<ExerciseInfo>() {
         @Override
         public ExerciseInfo createFromParcel(Parcel source) {
             return new ExerciseInfo(source);

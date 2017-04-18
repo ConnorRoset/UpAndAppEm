@@ -47,7 +47,8 @@ public class SettingsActivity extends AppCompatActivity {
                             TextUtils.isEmpty(emailET.getText().toString()) ||
                             TextUtils.isEmpty(userIDET.getText().toString()) ||
                             TextUtils.isEmpty((usernameET.getText().toString()))) {
-                        Toast.makeText(getApplicationContext(), "You have left a field empty", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "You have left a field empty", Toast.LENGTH_SHORT).show();
                     } else {
                         //populate the shared prefs with the data
                         name = nameET.getText().toString().trim();
@@ -69,7 +70,6 @@ public class SettingsActivity extends AppCompatActivity {
             });
         } else {
             submit.setEnabled(false);
-            //Toast.makeText(getApplicationContext(), "You are already logged in", Toast.LENGTH_SHORT).show();
             nameET.setText(sharedPreferences.getString(ExerciseListActivity.NAME, ""));
             nameET.setEnabled(false);
             nameET.setTextColor(Color.BLACK);

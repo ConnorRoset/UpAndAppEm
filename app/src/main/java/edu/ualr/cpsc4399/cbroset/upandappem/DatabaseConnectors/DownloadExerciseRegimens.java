@@ -55,7 +55,6 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
     @Override
     protected void onPreExecute() {
-//        Toast.makeText(activity.getApplicationContext(), "Starting", Toast.LENGTH_SHORT).show();
     }
 
     protected List<ExerciseRegimen> doInBackground(String... url) {
@@ -72,7 +71,6 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
             }
-            //response = stringBuilder.toString();
             //weird structure, so grab the first array
             JSONArray exerciseRegimenArray = new JSONArray(stringBuilder.toString());
 
@@ -82,11 +80,10 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
                 JSONObject obj = sub.getJSONObject(i);
                 ExerciseRegimen er = getExerciseRegimenFromJSON(obj);
 
+                //only add it if it is today's workout
                 if (DateUtils.isToday(er.getDue_date().getTimeInMillis())) {
                     exerciseRegimens.add(er);
                 }
-
-                //exerciseRegimens.add(getExerciseRegimenFromJSON(obj));
             }
 
         } catch (IOException | JSONException e) {
@@ -117,7 +114,6 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             eID = obj.getInt(EXERCISE_ID);
 
             //EXERCISEQUALITY
-            //quality = ExerciseRegimen.QUALITY.values()[obj.getInt(EXERCISE_QUALITY) -1];
             quality = ExerciseRegimen.QUALITY.TEN;
 
             //exercise reps
@@ -137,7 +133,8 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
 
             //don't update the time updated for now, it's okay
             //no need to do the time updated, that pulls system time on the database
-            er = new ExerciseRegimen(eID, reps, set, pID, rID, tID, quality, complete, dueDate, timeUpdated);
+            er = new ExerciseRegimen(eID, reps, set, pID, rID, tID, quality,
+                    complete, dueDate, timeUpdated);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -156,14 +153,9 @@ public class DownloadExerciseRegimens extends AsyncTask<String, Integer, List<Ex
             temp = "No workouts Today!";
             Toast.makeText(activity.getApplicationContext(), temp, Toast.LENGTH_LONG).show();
         } else {
-
-
-            //only after that one has finished calling can we attempt to fetch the info for the exercises
+            //only after that one has finished calling can we attempt to fetch the
+            // info for the exercises
             activity.getExerciseInfoFromDatabase();
         }
-        //Toast.makeText(activity.getApplicationContext(), String.valueOf(activity.getExerciseRegimens().size()), Toast.LENGTH_LONG).show();
-
     }
-
-
 }

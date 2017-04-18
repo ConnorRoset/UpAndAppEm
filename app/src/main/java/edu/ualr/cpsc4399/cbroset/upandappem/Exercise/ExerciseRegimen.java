@@ -20,7 +20,9 @@ public class ExerciseRegimen implements Parcelable {
     private boolean complete;
     private Calendar due_date, time_updated;
 
-    public ExerciseRegimen(int exercise_id, int exercise_reps, int exercise_set, int patient_id, int regimen_id, int therapist_id, QUALITY exercise_quality, boolean complete, Calendar due_date, Calendar time_updated) {
+    public ExerciseRegimen(int exercise_id, int exercise_reps, int exercise_set, int patient_id,
+                           int regimen_id, int therapist_id, QUALITY exercise_quality,
+                           boolean complete, Calendar due_date, Calendar time_updated) {
         this.exercise_id = exercise_id;
         this.exercise_reps = exercise_reps;
         this.exercise_set = exercise_set;

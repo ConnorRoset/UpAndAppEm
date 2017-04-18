@@ -32,8 +32,6 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
     private ExerciseInfo exerciseInfo = null;
     private ExerciseRegimen exerciseRegimen;
 
-    //connection info
-   // String urly;
     URLConnection urlconn = null;
     BufferedReader bufferedReader = null;
     public DownloadExerciseInfo(ExerciseListActivity activity, ExerciseRegimen exerciseRegimen){
@@ -43,12 +41,10 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
 
     @Override
     protected void onPreExecute(){
-        //preexecution stagee
         super.onPreExecute();
     }
 
     protected ExerciseInfo doInBackground(String... url){
-       // urly = url[0];
         try{
             urlconn = new URL(url[0]).openConnection();
             bufferedReader = new BufferedReader(new InputStreamReader(urlconn.getInputStream()));
@@ -70,7 +66,6 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
             instructions = obj.getString(INSTRUCTIONS);
             id = obj.getInt(DownloadExerciseRegimens.EXERCISE_ID);
             exerciseInfo = new ExerciseInfo(id,name,instructions);
-            //urly = exerciseInfo.getExercise_name();
         } catch (IOException | JSONException e){
             e.printStackTrace();
         }
@@ -80,8 +75,6 @@ public class DownloadExerciseInfo extends AsyncTask<String, Integer, ExerciseInf
 
     @Override
     protected void onPostExecute(ExerciseInfo exerciseInfo){
-        //Toast.makeText(activity.getApplicationContext(), urly, Toast.LENGTH_SHORT).show();
-        //activity.addExerciseInfoToRegimen(exerciseInfo);
         activity.addInfoRegToRegimen(new InfoReg(exerciseRegimen,exerciseInfo));
     }
 }

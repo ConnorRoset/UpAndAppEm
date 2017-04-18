@@ -21,7 +21,6 @@ import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseInfo;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.ExerciseRegimen;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoReg;
 import edu.ualr.cpsc4399.cbroset.upandappem.Exercise.InfoRegRVAdapter;
-import edu.ualr.cpsc4399.cbroset.upandappem.Messages.MessagesActivity;
 import edu.ualr.cpsc4399.cbroset.upandappem.Settings.SettingsActivity;
 
 import java.util.ArrayList;
@@ -187,13 +186,11 @@ public class ExerciseListActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        //Toast.makeText(this, "Main paused", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        //Toast.makeText(this, "Main stopped", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -204,12 +201,10 @@ public class ExerciseListActivity extends AppCompatActivity {
                 if (sharedPreferences.contains(LOGGED_IN)) {
                     Toast.makeText(getApplicationContext(), "logged in", Toast.LENGTH_SHORT).show();
                     getExerciseRegimensFromDatabase();
-//                    setupRecyclerView(recyclerView);
                 } else {
-                    Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT).show();
-                    //exerciseRegimens.clear();
+                    Toast.makeText(getApplicationContext(), "logged out", Toast.LENGTH_SHORT)
+                            .show();
                     infoRegs.clear();
-
                     exerciseInfos.clear();
                     exerciseRegimens.clear();
                 }
@@ -217,13 +212,6 @@ public class ExerciseListActivity extends AppCompatActivity {
         } else if (requestCode == EXERCISE_DETAIL) {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                //get the exercise id & the complete status from the bundle
-
-                if (bundle.containsKey(DownloadExerciseRegimens.COMPLETE)) {
-                    //Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
-
-                    //this is where the async task to the database will need to be made to update the exercise
-                }
                 updateExerciseRegimen(bundle.getInt(DownloadExerciseRegimens.REGIMEN_ID), bundle.getBoolean(DownloadExerciseRegimens.COMPLETE));
             }
         }
@@ -247,51 +235,27 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        int id = item.getItemId();
         if (id == R.id.action_settings) {
             //add a new settings detail here to login and what not
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityForResult(intent, SETTINGS_ACTIVITY_RESULT);
             return true;
         }
-// else if (id == R.id.action_message) {
-////            //build a messaging activity here
-////            startActivity(new Intent(this, MessagesActivity.class));
-//            return true;
-//        } else if (id == R.id.action_refresh) {
-//            refreshScreen();
-//        }
+
         return super.onOptionsItemSelected(item);
     }
 
     public void refreshScreen() {
         //refresh the recyclerview with the notifydatachanged
         recyclerView.getAdapter().notifyDataSetChanged();
-
     }
-
-
     //recyclerview setup information
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-//        List<InfoReg> todayWorkouts = new ArrayList<>();
-//        for(InfoReg infoReg : infoRegs){
-//            if(DateUtils.isToday(infoReg.getExerciseRegimen().getDue_date().getTimeInMillis())){
-//                Toast.makeText(this, "true!", Toast.LENGTH_SHORT).show();
-//                todayWorkouts.add(infoReg);
-//            } else{
-//                Toast.makeText(this, "false", Toast.LENGTH_SHORT).show();
-//            }
-//        }
         InfoRegRVAdapter adapter = new InfoRegRVAdapter(infoRegs, getApplicationContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
-
-
 }

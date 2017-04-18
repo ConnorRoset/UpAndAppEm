@@ -55,8 +55,8 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
             json = new JSONObject();
             json.put("complete", infoReg.getExerciseRegimen().isComplete());
             json.put("regimen_id", infoReg.getExerciseRegimen().getRegimen_id());
-            json.put("exercise_quality", infoReg.getExerciseRegimen().getExercise_quality().ordinal()+1);
-            //right here is where we need to add the put for the exercise Quality
+            json.put("exercise_quality",
+                    infoReg.getExerciseRegimen().getExercise_quality().ordinal()+1);
             //open the connection
             url1 = new URL(url[0]);
             connection = (HttpURLConnection) url1.openConnection();
@@ -66,7 +66,6 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
             connection.setRequestProperty("Content-Type", "application/json");
 
             //send the request
-//            String response = json.toString();
             dataOut = new DataOutputStream(connection.getOutputStream());
             dataOut.writeBytes(json.toString());
             //special line to force a connection.
@@ -87,9 +86,5 @@ public class UpdateExerciseRegimen extends AsyncTask<String, Integer, InfoReg> {
 
     @Override
     protected void onPostExecute(InfoReg infoReg) {
-
-        //Toast.makeText(activity, connection.getRequestMethod(), Toast.LENGTH_LONG).show();
-
-        //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
     }
 }
